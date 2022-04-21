@@ -1,0 +1,52 @@
+body {
+    background-color: cornsilk;
+    font-family: 'century gothic', monospace;
+}
+
+header {
+    border-bottom: solid;
+    padding-bottom: 10px;
+}
+
+.logo {
+    display: block;
+    margin: auto;
+}
+
+a.text:active,
+a.text {
+  text-decoration: none;
+  color: #000000;
+}
+
+a.text:hover {
+    color: indigo;
+}
+
+.header-right {
+    max-width: 10em;
+    min-width: 150px;
+    min-height: 1em;
+    margin-right: 10px;
+}
+
+.header-bottom {
+    text-align: center;
+    border-top: solid;
+    padding: 10px;
+}
+
+.types-list {
+    display: block;
+    margin: auto;
+    padding: 0;
+}
+
+.types-menu-item {
+    display: inline;
+    padding: 10px;
+}
+
+.container {
+    display: flex;
+}
