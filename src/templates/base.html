@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% block title %} {% endblock %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/base.css') }}">
+    {% block links %} {% endblock %}
+</head>
+<body>
+    <header>
+        <div class="header-top">
+            <div class="container">
+                <div class="header-left">
+                    <span>
+                        <p>Mon-Sun: 9.00-21.00</p>
+                        <p>+375-(29)-111-22-33</p>
+                    </span>
+                </div>
+                <div class="logo">
+                    <a href="{{ url_for('main_page') }}">
+                        <img src="../static/images/logo-small.png" alt="#">
+                    </a>
+                </div>
+                <ul class="header-right">
+                    {% if current_user.is_authenticated %}
+                        <p>{{ current_user.login }}</p>
+                        <li><a class="text" href="{{ url_for('logout_page') }}">Sign out</a></li>
+                    {% else %}
+                        <li><a class="text" href="{{ url_for('login_page') }}">Sign in</a></li>
+                        <li><a class="text" href="{{ url_for('register_page') }}">Sign up</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+        <div class="header-bottom">
+            <ul class="types-list">
+                {% for type in types %}
+                    <li class="types-menu-item">
+                        <a href="{{ '/' + type.name.lower() }}" class="text">{{ type.name }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </header>
+    {% block main %} {% endblock %}
+    <footer class="footer">
+        <div class="contacts">
+            <p>Mon-Sun: 9.00-21.00</p>
+            <p>+375-(29)-111-22-33</p>
+        </div>
+        <div class="copyrights">
+            <p>© 2022 "Uvelirka.by" All rights reserved.</p>
+            <p>Ltd "UvelirkaGroup International"</p>
+            <p>Legal address: 230000, Belarus, Ozheshko st, 321</p>
+            <p>Working hours 09:00 - 21:00</p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,43 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
+{% extends 'base.html' %}
+
+{% block title %}
     <title>Main page</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/main_page.css') }}">
-</head>
-<body>
-    <header>
-        <div class="header-top">
-            <div class="container">
-                <div class="header-left">
-                    <span class="header-phone">
-                        <p>ПН-ВС: 9.00-21.00</p>
-                        <p>+375291112233</p>
-                    </span>
-                </div>
-                <div class="logo">
-                    <img src="../static/images/logo-small.png" alt="#">
-                </div>
-                <ul class="header-right">
-                    {% if current_user.is_authenticated %}
-                        <p>{{ current_user.login }}</p>
-                        <li><a class="text" href="{{ url_for('logout_page') }}">Выйти</a></li>
-                    {% else %}
-                        <li><a class="text" href="{{ url_for('login_page') }}">Войти</a></li>
-                        <li><a class="text" href="{{ url_for('register_page') }}">Регистрация</a></li>
-                    {% endif %}
-                </ul>
-            </div>
-        </div>
-        <div class="header-bottom">
-            <ul class="types-list">
-                {% for type in types %}
-                    <li class="types-menu-item">
-                        <a href="{{ translit('/' + type.name, reversed=True) }}" class="text">{{ type.name }}</a>
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
-    </header>
-</body>
-</html>
+{% endblock %}
+
+{% block main %}
+    main from main_page.html
+{% endblock %}

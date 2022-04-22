@@ -1,0 +1,25 @@
+.catalog {
+    display: flex;
+}
+
+.catalog-filter {
+    min-width: 400px;
+    background-color: bisque;
+    display: block;
+}
+
+.catalog-wrap {
+    background-color: aliceblue;
+    flex: 1;
+}
+
+.filter-item {
+    border-top: solid;
+    border-width: thin;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}

@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    <title>Catalog</title>
+{% endblock %}
+
+{% block links %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/catalog.css') }}">
+{% endblock %}
+
+{% block main %}
+    <div class="catalog">
+        <div class="catalog-filter">
+            <form method="post" action="{{ url_for('catalog_page', product_type=product_type) }}">
+                <div class="filter-head">
+                    FILTERS
+                    <a href="{{ url_for('catalog_page', product_type=product_type) }}">Clear filters</a>
+                </div>
+                <div class="filter-content">
+                    <div class="filter-item">
+                        <p>Price</p>
+                        <label for="start">From</label>
+                        <input id="start" type="number" name="price-start" value="{{ min_price }}">
+                        <label for="end">To</label>
+                        <input id="end" type="number" name="price-end" value="{{ max_price }}">
+                    </div>
+                </div>
+                <button type="submit">Apply</button>
+            </form>
+        </div>
+        <div class="catalog-wrap">
+            {% if products %}
+                {% for product in products %}
+                    <article>
+                        <p>Name: {{ product.name }}</p>
+                        <p>Price: {{ product.price }}</p>
+                        <p>Quantity: {{ product.quantity }}</p>
+                    </article>
+                {% endfor %}
+            {% else %}
+                <p>No products found...</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

@@ -32,6 +32,3 @@ class ProductType(Base):
 
     id = sa.Column(sa.Integer, primary_key=True)
     name = sa.Column('name', sa.String)
-
-    def __repr__(self):
-        return f'ProductType(id={self.id}, name={self.name})'

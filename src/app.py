@@ -1,15 +1,17 @@
+from operator import attrgetter
+
 from flask import Flask, render_template, request, redirect, flash, url_for
 from db_setup import session
-from models import ProductType, User
+from models import ProductType, User, Product
 from flask_login import login_user, current_user, login_required, logout_user, LoginManager
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
-from transliterate import translit
 
 app = Flask(__name__, static_folder='static')
 app.secret_key = 'qwerty123'
 login_manager = LoginManager(app)
 
+PRODUCT_TYPES = session.query(ProductType).all()
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -18,8 +20,7 @@ def load_user(user_id):
 
 @app.route('/')
 def main_page():
-    types = session.query(ProductType).all()
-    return render_template('main_page.html', types=types, translit=translit)
+    return render_template('main_page.html', types=PRODUCT_TYPES)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -82,5 +83,40 @@ def logout_page():
 def redirect_to_sign_in(response):
     if response.status_code == 401:
         return redirect(url_for('login_page') + '?next=' + request.url)
-
     return response
+
+
+@app.route('/<product_type>', methods=['GET', 'POST'])
+def catalog_page(product_type):
+
+    pt = session.query(ProductType)\
+        .filter_by(name=product_type.capitalize())\
+        .first()
+
+    all_products = session.query(Product)\
+        .filter_by(type=pt.id)\
+        .all()
+
+    min_price = min(all_products, key=attrgetter('price')).price
+    max_price = max(all_products, key=attrgetter('price')).price
+
+    if request.method == 'GET':
+        return render_template('catalog.html', product_type=product_type, types=PRODUCT_TYPES, products=all_products, min_price=min_price, max_price=max_price)
+
+    price_start = request.form.get('price-start')
+    price_end = request.form.get('price-end')
+
+    if price_start == '':
+        price_start = min_price
+
+    if price_end == '':
+        price_end = max_price
+
+    products = session\
+        .query(Product)\
+        .filter(Product.price >= float(price_start), Product.price <= float(price_end))\
+        .all()
+
+    filtered_products = list(filter(lambda x: float(price_start) <= x.price <= float(price_end), all_products))
+
+    return render_template('catalog.html', product_type=product_type, types=PRODUCT_TYPES, products=filtered_products, min_price=price_start, max_price=price_end)
