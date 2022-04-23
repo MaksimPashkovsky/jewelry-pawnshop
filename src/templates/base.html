@@ -24,6 +24,7 @@
                 <ul class="header-right">
                     {% if current_user.is_authenticated %}
                         <p>{{ current_user.login }}</p>
+                        <li><a href="{{ url_for('cart_page') }}">Cart</a></li>
                         <li><a class="text" href="{{ url_for('logout_page') }}">Sign out</a></li>
                     {% else %}
                         <li><a class="text" href="{{ url_for('login_page') }}">Sign in</a></li>

@@ -1,7 +1,7 @@
 from operator import attrgetter
 from flask import Flask, render_template, request, redirect, flash, url_for
 from db_setup import session
-from models import ProductType, User, Product
+from models import ProductType, User, Product, CartNote
 from flask_login import login_user, current_user, login_required, logout_user, LoginManager
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
@@ -11,6 +11,7 @@ app.secret_key = 'qwerty123'
 login_manager = LoginManager(app)
 
 PRODUCT_TYPES = session.query(ProductType).all()
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -104,7 +105,8 @@ def catalog_page(product_type):
         max_price = max(all_products, key=attrgetter('price')).price
 
     if request.method == 'GET':
-        return render_template('catalog.html', product_type=product_type, types=PRODUCT_TYPES, products=all_products,
+        return render_template('catalog.html', product_type=product_type, types=PRODUCT_TYPES,
+                               products=sorted(all_products, key=attrgetter('name')),
                                min_price=min_price, max_price=max_price)
 
     price_start = request.form.get('price-start')
@@ -120,14 +122,58 @@ def catalog_page(product_type):
 
     sorting_option = request.form.get('sorting')
 
-    if sorting_option == 'name-asc':
-        sorted_products = sorted(filtered_products, key=attrgetter('name'))
-    elif sorting_option == 'name-desc':
-        sorted_products = sorted(filtered_products, key=attrgetter('name'), reverse=True)
-    elif sorting_option == 'price-asc':
-        sorted_products = sorted(filtered_products, key=attrgetter('price'))
-    else:
-        sorted_products = sorted(filtered_products, key=attrgetter('price'), reverse=True)
+    field, order = sorting_option.split('-')
+    sorted_products = sorted(filtered_products, key=attrgetter(field), reverse=True if order == 'desc' else False)
 
     return render_template('catalog.html', product_type=product_type, types=PRODUCT_TYPES, products=sorted_products,
                            min_price=price_start, max_price=price_end, sorting_option=sorting_option)
+
+
+@app.route('/add-to-cart', methods=['POST'])
+def add_to_cart():
+    data = request.get_json()
+    id_ = data['id']
+    new_cart_note = CartNote(user_id=current_user.id, product_id=id_)
+    session.add(new_cart_note)
+    session.commit()
+    return "added"
+
+
+@app.route('/remove-from-cart', methods=['POST'])
+def remove_from_cart():
+    data = request.get_json()
+    id_ = data['id']
+    note_to_delete = session.query(CartNote).filter_by(user_id=current_user.id, product_id=id_).one()
+    session.delete(note_to_delete)
+    session.commit()
+    return "removed"
+
+
+@app.route('/confirm', methods=['GET'])
+def confirm():
+    cart_notes = session.query(CartNote)\
+        .filter_by(user_id=current_user.id)\
+        .all()
+
+    for note in cart_notes:
+        product = session.query(Product).filter_by(id=note.product_id).first()
+        product.quantity -= 1
+        session.add(product)
+        session.commit()
+
+        session.delete(note)
+        session.commit()
+
+    return redirect(url_for('main_page'))
+
+
+@app.route('/cart', methods=['GET'])
+@login_required
+def cart_page():
+    cart_notes = session.query(CartNote)\
+        .filter_by(user_id=current_user.id)\
+        .all()
+
+    products = [note.product for note in cart_notes]
+
+    return render_template('cart.html', types=PRODUCT_TYPES, products=products)

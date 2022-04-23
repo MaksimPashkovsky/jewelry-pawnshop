@@ -1,0 +1,22 @@
+.cart {
+    display: flex;
+}
+
+.cart-items {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+}
+
+.cart-item {
+    width: 270px;
+    height: 300px;
+    border: solid;
+    margin: 40px;
+}
+
+.payment {
+    width: 200px;
+    background-color: darkorange;
+    margin-left: auto;
+}

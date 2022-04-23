@@ -11,15 +11,30 @@
 {% block script %}
     <script>
         var sorting_option = "{{ sorting_option }}";
-        console.log(sorting_option);
         if (sorting_option !== "") {
-            // document.getElementById('sorting-options').value = sorting_option;
             document.querySelector('#sorting-options').value = sorting_option;
         }
         else {
-            // document.getElementById('sorting-options').value = 'name-asc';
             document.querySelector('#sorting-options').value = 'name-asc';
         }
+
+        function add_to_cart(id) {
+            {% if current_user.is_authenticated %}
+            fetch("{{ url_for('add_to_cart') }}", {
+                method: "POST",
+                body: JSON.stringify({
+                    id: id,
+                    }),
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8",
+                },
+            }).then(console.log);
+            alert('added to cart');
+            {% else %}
+                window.location.replace("{{ url_for('login_page') }}")
+            {% endif %}
+        }
+
     </script>
 {% endblock %}
 
@@ -66,6 +81,7 @@
                         <p>Name: {{ product.name }}</p>
                         <p>Price: {{ product.price }}</p>
                         <p>Quantity: {{ product.quantity }}</p>
+                        <button {% if product.quantity == 0 %}disabled{% endif %} onclick="add_to_cart({{ product.id }})">Add to cart</button>
                     </article>
                 {% endfor %}
             {% else %}

@@ -1,4 +1,5 @@
 import sqlalchemy as sa
+from sqlalchemy.orm import relationship
 from db_setup import Base
 from flask_login import UserMixin
 
@@ -22,10 +23,11 @@ class Product(Base):
 
     id = sa.Column(sa.Integer, primary_key=True)
     name = sa.Column('name', sa.String)
-    type = sa.Column('type', sa.String)
+    type = sa.Column('type', sa.Integer, sa.ForeignKey("product_types.id"))
     price = sa.Column('price', sa.Numeric)
     quantity = sa.Column('quantity', sa.Integer)
     image = sa.Column('image', sa.String)
+    type_object = relationship('ProductType')
 
 
 class ProductType(Base):
@@ -33,3 +35,17 @@ class ProductType(Base):
 
     id = sa.Column(sa.Integer, primary_key=True)
     name = sa.Column('name', sa.String)
+
+
+class CartNote(Base):
+    __tablename__ = 'carts'
+
+    id = sa.Column(sa.Integer, primary_key=True)
+    user_id = sa.Column(sa.Integer, sa.ForeignKey("users.id"))
+    product_id = sa.Column(sa.Integer, sa.ForeignKey("products.id"))
+    user = relationship("User")
+    product = relationship("Product")
+
+    def __init__(self, user_id, product_id):
+        self.user_id = user_id
+        self.product_id = product_id

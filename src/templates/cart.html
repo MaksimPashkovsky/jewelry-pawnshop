@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    <title>Cart</title>
+{% endblock %}
+
+{% block links %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/cart.css') }}">
+{% endblock %}
+
+{% block script %}
+    <script>
+        function remove_from_cart(id) {
+            fetch("{{ url_for('remove_from_cart') }}", {
+                method: "POST",
+                body: JSON.stringify({
+                    id: id,
+                    }),
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8",
+                },
+            }).then(console.log);
+            alert('removed from cart');
+            location.reload();
+        }
+
+        function checkout() {
+            alert('Thanks!!!')
+        }
+    </script>
+{% endblock %}
+
+{% block main %}
+    <div class="cart">
+        <div class="cart-items">
+            {% if products %}
+                {% for product in products %}
+                    <div class="cart-item">
+                        <div class="cart-item-image">
+                            {% if product.image %}
+                                <img src="../static/images/{{ product.image }}" alt="#" height="170" width="230">
+                            {% else %}
+                                <img src="../static/images/no-image.png" alt="#" height="170" width="230">
+                            {% endif %}
+                        </div>
+                        <p>Name: {{ product.name }}</p>
+                        <p>Price: {{ product.price }}</p>
+                        <button onclick="remove_from_cart({{ product.id }})">Remove</button>
+                    </div>
+                {% endfor %}
+            {% else %}
+                No products in cart...
+            {% endif %}
+        </div>
+        <div class="payment">
+            <p>Products in cart: {{ products|length }}</p>
+            <p>Total price: {{ products|sum(attribute='price') }}</p>
+            <a href="{{ url_for('confirm') }}">Confirm</a>
+        </div>
+    </div>
+{% endblock %}
