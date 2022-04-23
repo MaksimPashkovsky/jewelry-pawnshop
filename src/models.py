@@ -25,6 +25,7 @@ class Product(Base):
     type = sa.Column('type', sa.String)
     price = sa.Column('price', sa.Numeric)
     quantity = sa.Column('quantity', sa.Integer)
+    image = sa.Column('image', sa.String)
 
 
 class ProductType(Base):

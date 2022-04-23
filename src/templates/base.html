@@ -36,7 +36,7 @@
             <ul class="types-list">
                 {% for type in types %}
                     <li class="types-menu-item">
-                        <a href="{{ '/' + type.name.lower() }}" class="text">{{ type.name }}</a>
+                        <a href="{{ '/catalog/' + type.name.lower() }}" class="text">{{ type.name }}</a>
                     </li>
                 {% endfor %}
             </ul>
@@ -56,4 +56,5 @@
         </div>
     </footer>
 </body>
+    {% block script %} {% endblock %}
 </html>

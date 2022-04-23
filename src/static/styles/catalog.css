@@ -11,6 +11,20 @@
 .catalog-wrap {
     background-color: aliceblue;
     flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.catalog-item {
+    width: 270px;
+    height: 300px;
+    margin: 40px;
+    border: thin solid;
+}
+
+.catalog-item-image {
+    text-align: center;
 }
 
 .filter-item {

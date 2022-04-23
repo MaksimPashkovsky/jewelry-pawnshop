@@ -1,5 +1,4 @@
 from operator import attrgetter
-
 from flask import Flask, render_template, request, redirect, flash, url_for
 from db_setup import session
 from models import ProductType, User, Product
@@ -86,22 +85,27 @@ def redirect_to_sign_in(response):
     return response
 
 
-@app.route('/<product_type>', methods=['GET', 'POST'])
+@app.route('/catalog/<product_type>', methods=['GET', 'POST'])
 def catalog_page(product_type):
 
-    pt = session.query(ProductType)\
+    product_type_object = session.query(ProductType)\
         .filter_by(name=product_type.capitalize())\
         .first()
 
+    # All products of concrete type
     all_products = session.query(Product)\
-        .filter_by(type=pt.id)\
+        .filter_by(type=product_type_object.id)\
         .all()
 
-    min_price = min(all_products, key=attrgetter('price')).price
-    max_price = max(all_products, key=attrgetter('price')).price
+    if len(all_products) == 0:
+        min_price, max_price = '', ''
+    else:
+        min_price = min(all_products, key=attrgetter('price')).price
+        max_price = max(all_products, key=attrgetter('price')).price
 
     if request.method == 'GET':
-        return render_template('catalog.html', product_type=product_type, types=PRODUCT_TYPES, products=all_products, min_price=min_price, max_price=max_price)
+        return render_template('catalog.html', product_type=product_type, types=PRODUCT_TYPES, products=all_products,
+                               min_price=min_price, max_price=max_price)
 
     price_start = request.form.get('price-start')
     price_end = request.form.get('price-end')
@@ -112,11 +116,18 @@ def catalog_page(product_type):
     if price_end == '':
         price_end = max_price
 
-    products = session\
-        .query(Product)\
-        .filter(Product.price >= float(price_start), Product.price <= float(price_end))\
-        .all()
-
     filtered_products = list(filter(lambda x: float(price_start) <= x.price <= float(price_end), all_products))
 
-    return render_template('catalog.html', product_type=product_type, types=PRODUCT_TYPES, products=filtered_products, min_price=price_start, max_price=price_end)
+    sorting_option = request.form.get('sorting')
+
+    if sorting_option == 'name-asc':
+        sorted_products = sorted(filtered_products, key=attrgetter('name'))
+    elif sorting_option == 'name-desc':
+        sorted_products = sorted(filtered_products, key=attrgetter('name'), reverse=True)
+    elif sorting_option == 'price-asc':
+        sorted_products = sorted(filtered_products, key=attrgetter('price'))
+    else:
+        sorted_products = sorted(filtered_products, key=attrgetter('price'), reverse=True)
+
+    return render_template('catalog.html', product_type=product_type, types=PRODUCT_TYPES, products=sorted_products,
+                           min_price=price_start, max_price=price_end, sorting_option=sorting_option)

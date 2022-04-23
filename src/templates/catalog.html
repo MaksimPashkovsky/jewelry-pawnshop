@@ -8,6 +8,21 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/catalog.css') }}">
 {% endblock %}
 
+{% block script %}
+    <script>
+        var sorting_option = "{{ sorting_option }}";
+        console.log(sorting_option);
+        if (sorting_option !== "") {
+            // document.getElementById('sorting-options').value = sorting_option;
+            document.querySelector('#sorting-options').value = sorting_option;
+        }
+        else {
+            // document.getElementById('sorting-options').value = 'name-asc';
+            document.querySelector('#sorting-options').value = 'name-asc';
+        }
+    </script>
+{% endblock %}
+
 {% block main %}
     <div class="catalog">
         <div class="catalog-filter">
@@ -24,6 +39,15 @@
                         <label for="end">To</label>
                         <input id="end" type="number" name="price-end" value="{{ max_price }}">
                     </div>
+                    <div class="filter-item">
+                        <p>Sort by</p>
+                        <select name="sorting" id="sorting-options">
+                            <option value="name-asc">↑ Name</option>
+                            <option value="name-desc">↓ Name</option>
+                            <option value="price-asc">↑ Price</option>
+                            <option value="price-desc">↓ Price</option>
+                        </select>
+                    </div>
                 </div>
                 <button type="submit">Apply</button>
             </form>
@@ -31,7 +55,14 @@
         <div class="catalog-wrap">
             {% if products %}
                 {% for product in products %}
-                    <article>
+                    <article class="catalog-item">
+                        <div class="catalog-item-image">
+                            {% if product.image %}
+                                <img src="../static/images/{{ product.image }}" alt="#" height="170" width="230">
+                            {% else %}
+                                <img src="../static/images/no-image.png" alt="#" height="170" width="230">
+                            {% endif %}
+                        </div>
                         <p>Name: {{ product.name }}</p>
                         <p>Price: {{ product.price }}</p>
                         <p>Quantity: {{ product.quantity }}</p>
