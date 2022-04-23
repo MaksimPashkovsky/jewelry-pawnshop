@@ -5,6 +5,7 @@ from models import ProductType, User, Product, CartNote
 from flask_login import login_user, current_user, login_required, logout_user, LoginManager
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
+import random
 
 app = Flask(__name__, static_folder='static')
 app.secret_key = 'qwerty123'
@@ -20,7 +21,9 @@ def load_user(user_id):
 
 @app.route('/')
 def main_page():
-    return render_template('main_page.html', types=PRODUCT_TYPES)
+    all_products = session.query(Product).all()
+    random_products = random.sample(all_products, 3)
+    return render_template('main_page.html', types=PRODUCT_TYPES, random_products=random_products)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -129,6 +132,12 @@ def catalog_page(product_type):
                            min_price=price_start, max_price=price_end, sorting_option=sorting_option)
 
 
+@app.route('/catalog/product/<id>')
+def product_page(id):
+    product = session.query(Product).filter_by(id=id).first()
+    return render_template('product.html', product=product, types=PRODUCT_TYPES)
+
+
 @app.route('/add-to-cart', methods=['POST'])
 def add_to_cart():
     data = request.get_json()
@@ -160,7 +169,6 @@ def confirm():
         product.quantity -= 1
         session.add(product)
         session.commit()
-
         session.delete(note)
         session.commit()
 

@@ -6,6 +6,11 @@
     min-width: 400px;
     background-color: bisque;
     display: block;
+    padding: 10px;
+}
+
+.filter-head {
+    margin-bottom: 10px;
 }
 
 .catalog-wrap {
@@ -30,6 +35,18 @@
 .filter-item {
     border-top: solid;
     border-width: thin;
+    margin-bottom: 10px;
+    padding-top: 10px;
+
+}
+
+#start, #end {
+    width: 60px;
+    text-align: center;
+}
+
+#sorting-options {
+    margin-left: 10px;
 }
 
 input::-webkit-outer-spin-button,

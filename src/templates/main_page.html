@@ -4,6 +4,33 @@
     <title>Main page</title>
 {% endblock %}
 
+{% block links %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/main.css') }}">
+{% endblock %}
+
 {% block main %}
-    main from main_page.html
+    <div class="main-page-content">
+        <div class="best-offers">
+            <div style="text-align: center">Best offers</div>
+            <div class="best-offers-container">
+                {% for product in random_products %}
+                    <div class="best-offers-item">
+                        <a href={{ url_for('product_page', id=product.id) }}>
+                        <div class="best-offers-item-image">
+                            {% if product.image %}
+                                <img src="../static/images/{{ product.image }}" alt="#" height="170" width="230">
+                            {% else %}
+                                <img src="../static/images/no-image.png" alt="#" height="170" width="230">
+                            {% endif %}
+                        </div>
+                        </a>
+                        <p>Name: {{ product.name }}</p>
+                        <p>Price: {{ product.price }}</p>
+                        <p>Quantity: {{ product.quantity }}</p>
+                        <button {% if product.quantity == 0 %}disabled{% endif %} onclick="add_to_cart({{ product.id }})">Add to cart</button>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 {% endblock %}
