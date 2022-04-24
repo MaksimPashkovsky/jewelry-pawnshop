@@ -37,11 +37,7 @@
                 {% for product in products %}
                     <div class="cart-item">
                         <div class="cart-item-image">
-                            {% if product.image %}
-                                <img src="../static/images/{{ product.image }}" alt="#" height="170" width="230">
-                            {% else %}
-                                <img src="../static/images/no-image.png" alt="#" height="170" width="230">
-                            {% endif %}
+                            <img src="../static/images/{{ product.image if product.image else "no-image.png" }}" alt="#" height="170" width="230">
                         </div>
                         <p>Name: {{ product.name }}</p>
                         <p>Price: {{ product.price }}</p>

@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {{ toastr.include_jquery() }}
+    {{ toastr.include_toastr_css() }}
+    {{ toastr.message() }}
     <meta charset="UTF-8">
     {% block title %} {% endblock %}
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/base.css') }}">
     {% block links %} {% endblock %}
 </head>
 <body>
+    {{ toastr.include_toastr_js() }}
     <header>
         <div class="header-top">
             <div class="container">
@@ -35,7 +39,7 @@
         </div>
         <div class="header-bottom">
             <ul class="types-list">
-                {% for type in types %}
+                {% for type in PRODUCT_TYPES %}
                     <li class="types-menu-item">
                         <a href="{{ '/catalog/' + type.name.lower() }}" class="text">{{ type.name }}</a>
                     </li>

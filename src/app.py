@@ -5,13 +5,15 @@ from models import ProductType, User, Product, CartNote
 from flask_login import login_user, current_user, login_required, logout_user, LoginManager
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime
+from flask_toastr import Toastr
 import random
 
 app = Flask(__name__, static_folder='static')
 app.secret_key = 'qwerty123'
 login_manager = LoginManager(app)
-
-PRODUCT_TYPES = session.query(ProductType).all()
+toastr = Toastr(app)
+app.config['TOASTR_POSITION_CLASS'] = 'toast-bottom-right'
+app.jinja_env.globals['PRODUCT_TYPES'] = session.query(ProductType).all()
 
 
 @login_manager.user_loader
@@ -23,7 +25,7 @@ def load_user(user_id):
 def main_page():
     all_products = session.query(Product).all()
     random_products = random.sample(all_products, 3)
-    return render_template('main_page.html', types=PRODUCT_TYPES, random_products=random_products)
+    return render_template('main_page.html', random_products=random_products)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -101,64 +103,62 @@ def catalog_page(product_type):
         .filter_by(type=product_type_object.id)\
         .all()
 
-    if len(all_products) == 0:
-        min_price, max_price = '', ''
-    else:
-        min_price = min(all_products, key=attrgetter('price')).price
-        max_price = max(all_products, key=attrgetter('price')).price
-
     if request.method == 'GET':
-        return render_template('catalog.html', product_type=product_type, types=PRODUCT_TYPES,
-                               products=sorted(all_products, key=attrgetter('name')),
-                               min_price=min_price, max_price=max_price)
+        return render_template('catalog.html', product_type=product_type,
+                               products=sorted(all_products, key=attrgetter('name')))
 
     price_start = request.form.get('price-start')
     price_end = request.form.get('price-end')
 
     if price_start == '':
-        price_start = min_price
+        price_start = min(all_products, key=attrgetter('price')).price
 
     if price_end == '':
-        price_end = max_price
+        price_end = max(all_products, key=attrgetter('price')).price
 
     filtered_products = list(filter(lambda x: float(price_start) <= x.price <= float(price_end), all_products))
 
     sorting_option = request.form.get('sorting')
 
     field, order = sorting_option.split('-')
-    sorted_products = sorted(filtered_products, key=attrgetter(field), reverse=True if order == 'desc' else False)
+    sorted_products = sorted(filtered_products, key=attrgetter(field), reverse=order == 'desc')
 
-    return render_template('catalog.html', product_type=product_type, types=PRODUCT_TYPES, products=sorted_products,
-                           min_price=price_start, max_price=price_end, sorting_option=sorting_option)
+    return render_template('catalog.html', product_type=product_type, products=sorted_products,
+                           sorting_option=sorting_option)
 
 
 @app.route('/catalog/product/<id>')
 def product_page(id):
     product = session.query(Product).filter_by(id=id).first()
-    return render_template('product.html', product=product, types=PRODUCT_TYPES)
+    return render_template('product.html', product=product)
 
 
-@app.route('/add-to-cart', methods=['POST'])
-def add_to_cart():
-    data = request.get_json()
-    id_ = data['id']
-    new_cart_note = CartNote(user_id=current_user.id, product_id=id_)
+@app.route('/add-to-cart/<id>', methods=['GET'])
+@login_required
+def add_to_cart(id):
+    new_cart_note = CartNote(user_id=current_user.id, product_id=id)
     session.add(new_cart_note)
     session.commit()
-    return "added"
+    flash("Added to cart")
+    product_type = session.query(Product).filter_by(id=id).first().type_object.name
+    return redirect(url_for('catalog_page', product_type=product_type.lower()))
 
 
 @app.route('/remove-from-cart', methods=['POST'])
+@login_required
 def remove_from_cart():
     data = request.get_json()
     id_ = data['id']
-    note_to_delete = session.query(CartNote).filter_by(user_id=current_user.id, product_id=id_).one()
+    note_to_delete = session.query(CartNote)\
+        .filter_by(user_id=current_user.id, product_id=id_)\
+        .first()
     session.delete(note_to_delete)
     session.commit()
     return "removed"
 
 
 @app.route('/confirm', methods=['GET'])
+@login_required
 def confirm():
     cart_notes = session.query(CartNote)\
         .filter_by(user_id=current_user.id)\
@@ -184,4 +184,4 @@ def cart_page():
 
     products = [note.product for note in cart_notes]
 
-    return render_template('cart.html', types=PRODUCT_TYPES, products=products)
+    return render_template('cart.html', products=products)

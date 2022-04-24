@@ -17,24 +17,6 @@
         else {
             document.querySelector('#sorting-options').value = 'name-asc';
         }
-
-        function add_to_cart(id) {
-            {% if current_user.is_authenticated %}
-            fetch("{{ url_for('add_to_cart') }}", {
-                method: "POST",
-                body: JSON.stringify({
-                    id: id,
-                    }),
-                headers: {
-                    "Content-type": "application/json; charset=UTF-8",
-                },
-            }).then(console.log);
-            alert('added to cart');
-            {% else %}
-                window.location.replace("{{ url_for('login_page') }}")
-            {% endif %}
-        }
-
     </script>
 {% endblock %}
 
@@ -50,9 +32,9 @@
                     <div class="filter-item">
                         <b>Price</b> <br>
                         <label for="start">From</label>
-                        <input id="start" type="number" name="price-start" value="{{ min_price }}">
                         <label for="end">To</label>
-                        <input id="end" type="number" name="price-end" value="{{ max_price }}">
+                        <input id="start" type="number" step="any" autocomplete="off" name="price-start" value="{{ products|min(attribute='price')|attr('price') if products }}">
+                        <input id="end" type="number" step="any" autocomplete="off" name="price-end" value="{{ products|max(attribute='price')|attr('price') if products }}">
                     </div>
                     <div class="filter-item">
                         <b>Sort by</b>
@@ -73,17 +55,13 @@
                     <article class="catalog-item">
                         <div class="catalog-item-image">
                             <a href={{ url_for('product_page', id=product.id) }}>
-                            {% if product.image %}
-                                <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="#" height="170" width="230">
-                            {% else %}
-                                <img src="{{ url_for('static', filename='images/no-image.png') }}" alt="#" height="170" width="230">
-                            {% endif %}
+                                <img src="{{ url_for('static', filename='images/' + product.image) if product.image else url_for('static', filename='images/no-image.png') }}" alt="#" height="170" width="230">
                             </a>
                         </div>
                         <p>Name: {{ product.name }}</p>
                         <p>Price: {{ product.price }}</p>
                         <p>Quantity: {{ product.quantity }}</p>
-                        <button {% if product.quantity == 0 %}disabled{% endif %} onclick="add_to_cart({{ product.id }})">Add to cart</button>
+                        <a style="visibility: {{ "hidden" if product.quantity == 0 else "visible" }}" href="{{ url_for('add_to_cart', id=product.id) }}">Add to cart</a>
                     </article>
                 {% endfor %}
             {% else %}

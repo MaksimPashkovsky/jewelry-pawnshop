@@ -16,15 +16,12 @@
     </ul>
   {% endif %}
 {% endwith %}
-{% block body %}{% endblock %}
 
     <form method="post">
         <label for="login">Login</label>
-        <input id="login" name="login" required>
-
+        <input id="login" autocomplete="off" name="login" required>
         <label for="password">Password</label>
-        <input id="password" name="password" required>
-
+        <input id="password" autocomplete="off" type="password" name="password" required>
         <button type="submit">Submit</button>
     </form>
 </body>

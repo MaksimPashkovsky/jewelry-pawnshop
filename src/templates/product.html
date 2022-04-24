@@ -9,12 +9,5 @@
 {% endblock %}
 
 {% block main %}
-    {% if product.image %}
-        <img src="{{ url_for('static', filename='images/' +  product.image) }}" alt="#">
-    {% else %}
-        <img src="{{ url_for('static', filename='images/no-image.png') }}" alt="#">
-    {% endif %}
-
-
-
+    <img src="{{ url_for('static', filename='images/' + (product.image if product.image else "no-image.png")) }}" alt="#">
 {% endblock %}
