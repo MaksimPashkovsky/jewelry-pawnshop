@@ -42,7 +42,7 @@ def login_page():
     user = User.query.filter_by(login=login).first()
 
     if user is None:
-        flash('User not found!')
+        flash('User not found!', 'error')
         return render_template('login.html')
 
     if check_password_hash(user.password, password):
@@ -54,7 +54,7 @@ def login_page():
 
         return redirect(url_for('main_page'))
 
-    flash('Wrong password!')
+    flash('Wrong password!', 'error')
     return render_template('login.html')
 
 
@@ -66,11 +66,6 @@ def register_page():
 
     login = request.form.get('login')
     password = request.form.get('password')
-    password2 = request.form.get('password2')
-
-    if password != password2:
-        flash("Password doesn't match!")
-        return render_template('register.html')
 
     new_user = User(login=login, password=generate_password_hash(password), reg_date=datetime.now())
 

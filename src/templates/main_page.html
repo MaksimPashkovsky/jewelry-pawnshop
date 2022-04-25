@@ -20,9 +20,12 @@
                             <img src="../static/images/{{ product.image if product.image else "no-image.png" }}" alt="#" height="170" width="230">
                         </div>
                         </a>
-                        <p>Name: {{ product.name }}</p>
-                        <p>Price: {{ product.price }}</p>
-                        <p>Quantity: {{ product.quantity }}</p>
+                        <div class="best-offers-item-info">
+                            <p>Name: {{ product.name }}</p>
+                            <p>Price: {{ product.price }}</p>
+                            <p>Quantity: {{ product.quantity }}</p>
+                        </div>
+
                     </div>
                 {% endfor %}
             </div>
