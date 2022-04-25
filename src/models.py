@@ -10,12 +10,16 @@ class User(Base, UserMixin):
     id = sa.Column(sa.Integer, primary_key=True)
     login = sa.Column('login', sa.String, unique=True)
     password = sa.Column('password', sa.String)
+    email = sa.Column('email', sa.String)
+    is_verified = sa.Column('is_verified', sa.Boolean)
     registration_date = sa.Column('registration date', sa.Date)
 
-    def __init__(self, login, password, reg_date):
+    def __init__(self, login, password, email, reg_date, is_verified):
         self.login = login
         self.password = password
+        self.email = email
         self.registration_date = reg_date
+        self.is_verified = is_verified
 
 
 class Product(Base):

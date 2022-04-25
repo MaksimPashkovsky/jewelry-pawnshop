@@ -1,22 +1,33 @@
 import random
 from datetime import datetime
 from operator import attrgetter
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from flask import Flask, render_template, request, redirect, flash, url_for, session
 from flask_login import login_user, current_user, login_required, logout_user, LoginManager
 from flask_toastr import Toastr
+from flask_mail import Mail, Message
 from werkzeug.security import check_password_hash, generate_password_hash
+from decouple import config
 from db_setup import session as db_session
 from models import ProductType, User, Product, CartNote
 
 app = Flask(__name__, static_folder='static')
-app.debug = True
-app.secret_key = 'qwerty123'
-login_manager = LoginManager(app)
-toastr = Toastr(app)
+app.secret_key = config('APP_SECRET_KEY')
 app.config['TOASTR_POSITION_CLASS'] = 'toast-bottom-right'
 app.config['TOASTR_PROGRESS_BAR'] = 'false'
 app.config['TOASTR_TIMEOUT'] = 1500
+app.config['MAIL_SERVER'] = config('MAIL_SERVER')
+app.config['MAIL_PORT'] = config('MAIL_PORT', cast=int)
+app.config['MAIL_USERNAME'] = config('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = config('MAIL_PASSWORD')
+app.config['MAIL_USE_TLS'] = config('MAIL_USE_TLS', cast=bool)
+app.config['MAIL_USE_SSL'] = config('MAIL_USE_SSL', cast=bool)
 app.jinja_env.globals['PRODUCT_TYPES'] = db_session.query(ProductType).all()
+
+url_safe_timed_serializer = URLSafeTimedSerializer(config('URL_SAFE_TIMED_SERIALIZER_SECRET_KEY'))
+login_manager = LoginManager(app)
+toastr = Toastr(app)
+mail = Mail(app)
 
 
 @login_manager.user_loader
@@ -40,6 +51,10 @@ def login_page():
     login = request.form.get('login')
     password = request.form.get('password')
     user = User.query.filter_by(login=login).first()
+
+    if not user.is_verified:
+        flash('Account is not verified. Check your email', 'warning')
+        return render_template('login.html')
 
     if user is None:
         flash('User not found!', 'error')
@@ -66,12 +81,40 @@ def register_page():
 
     login = request.form.get('login')
     password = request.form.get('password')
+    email = request.form.get('email')
+    session['email'] = email
 
-    new_user = User(login=login, password=generate_password_hash(password), reg_date=datetime.now())
+    new_user = User(login=login, password=generate_password_hash(password),
+                    email=email, reg_date=datetime.now(), is_verified=False)
 
     db_session.add(new_user)
     db_session.commit()
 
+    return redirect(url_for('send_email_again'))
+
+
+@app.route('/confirm_email/<token>')
+def confirm_email(token):
+    try:
+        email = url_safe_timed_serializer.loads(token, salt='salt', max_age=3600)
+    except SignatureExpired:
+        return render_template('email_confirm.html', success=False)
+    user = db_session.query(User).filter_by(email=email).first()
+    user.is_verified = True
+    db_session.add(user)
+    db_session.commit()
+    return render_template('email_confirm.html', success=True)
+
+
+@app.route('/send_email_again')
+def send_email_again():
+    email = session['email']
+    token = url_safe_timed_serializer.dumps(email, salt='salt')
+    msg = Message('Confirm email!', sender='jewelry-shop@yahoo.com', recipients=[email])
+    link = url_for('confirm_email', token=token, _external=True)
+    msg.body = 'Your link is: ' + link
+    mail.send(msg)
+    flash('Email sent')
     return redirect(url_for('login_page'))
 
 

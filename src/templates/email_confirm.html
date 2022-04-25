@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Email confirm</title>
+</head>
+<body>
+    {% if success %}
+        <h1>Account successfully verified!</h1>
+        <a href="{{ url_for('login_page') }}">Go to login page</a>
+    {% else %}
+        <h1>Your token expired :(</h1>
+        <a href="{{ url_for('send_email_again') }}">Send again</a>
+    {% endif %}
+</body>
+</html>
