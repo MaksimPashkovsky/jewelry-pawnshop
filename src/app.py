@@ -13,6 +13,9 @@ app.debug = True
 app.secret_key = 'qwerty123'
 login_manager = LoginManager(app)
 toastr = Toastr(app)
+app.config['TOASTR_POSITION_CLASS'] = 'toast-bottom-right'
+app.config['TOASTR_PROGRESS_BAR'] = 'false'
+app.config['TOASTR_TIMEOUT'] = 1500
 app.jinja_env.globals['PRODUCT_TYPES'] = db_session.query(ProductType).all()
 
 
@@ -155,17 +158,24 @@ def add_to_cart():
     return '', 204
 
 
-@app.route('/remove-from-cart', methods=['POST'])
+@app.route('/remove-from-cart/<id>', methods=['GET'])
 @login_required
-def remove_from_cart():
-    data = request.get_json()
-    id_ = data['id']
+def remove_from_cart(id):
     note_to_delete = db_session.query(CartNote)\
-        .filter_by(user_id=current_user.id, product_id=id_)\
+        .filter_by(user_id=current_user.id, product_id=id)\
         .first()
     db_session.delete(note_to_delete)
     db_session.commit()
-    return "removed"
+    flash('Removed from cart')
+    return redirect(url_for('cart_page'))
+
+
+@app.route('/remove-all-from-cart', methods=['GET'])
+def remove_all_from_cart():
+    db_session.query(CartNote).filter_by(user_id=current_user.id).delete(synchronize_session='fetch')
+    db_session.commit()
+    flash('Removed all')
+    return redirect(url_for('cart_page'))
 
 
 @app.route('/confirm', methods=['GET'])

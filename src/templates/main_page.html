@@ -23,7 +23,6 @@
                         <p>Name: {{ product.name }}</p>
                         <p>Price: {{ product.price }}</p>
                         <p>Quantity: {{ product.quantity }}</p>
-                        <button {% if product.quantity == 0 %}disabled{% endif %} onclick="add_to_cart({{ product.id }})">Add to cart</button>
                     </div>
                 {% endfor %}
             </div>

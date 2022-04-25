@@ -10,23 +10,6 @@
 
 {% block script %}
     <script>
-        function remove_from_cart(id) {
-            fetch("{{ url_for('remove_from_cart') }}", {
-                method: "POST",
-                body: JSON.stringify({
-                    id: id,
-                    }),
-                headers: {
-                    "Content-type": "application/json; charset=UTF-8",
-                },
-            }).then(console.log);
-            alert('removed from cart');
-            location.reload();
-        }
-
-        function checkout() {
-            alert('Thanks!!!')
-        }
     </script>
 {% endblock %}
 
@@ -41,7 +24,7 @@
                         </div>
                         <p>Name: {{ product.name }}</p>
                         <p>Price: {{ product.price }}</p>
-                        <button onclick="remove_from_cart({{ product.id }})">Remove</button>
+                        <a href="{{ url_for('remove_from_cart', id=product.id) }}">Remove</a>
                     </div>
                 {% endfor %}
             {% else %}
@@ -50,6 +33,7 @@
         </div>
         <div class="payment">
             <p>Products in cart: {{ products|length }}</p>
+            <a href="{{ url_for('remove_all_from_cart') }}">Remove all</a>
             <p>Total price: {{ products|sum(attribute='price') }}</p>
             <a href="{{ url_for('confirm') }}">Confirm</a>
         </div>
