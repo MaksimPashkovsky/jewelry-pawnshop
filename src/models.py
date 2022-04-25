@@ -1,7 +1,7 @@
 import sqlalchemy as sa
 from sqlalchemy.orm import relationship
-from db_setup import Base
 from flask_login import UserMixin
+from db_setup import Base
 
 
 class User(Base, UserMixin):

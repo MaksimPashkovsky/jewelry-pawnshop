@@ -10,12 +10,17 @@
 
 {% block script %}
     <script>
-        var sorting_option = "{{ sorting_option }}";
-        if (sorting_option !== "") {
-            document.querySelector('#sorting-options').value = sorting_option;
-        }
-        else {
-            document.querySelector('#sorting-options').value = 'name-asc';
+        const sorting_option = "{{ sorting_option }}";
+        document.querySelector('#sorting-options').value = sorting_option !== "" ? sorting_option : 'name-asc'
+
+        function add_to_cart(id) {
+            toastr.options.positionClass = "toast-bottom-right";
+            toastr.options.timeOut = 1500;
+            fetch("{{ url_for('add_to_cart') }}", {
+                method: "POST",
+                body: JSON.stringify({ id: id, }),
+                headers: { "Content-type": "application/json; charset=UTF-8", },
+            }).then(toastr.success('Added to cart'));
         }
     </script>
 {% endblock %}
@@ -26,15 +31,15 @@
             <form method="post" action="{{ url_for('catalog_page', product_type=product_type) }}">
                 <div class="filter-head">
                     <b>FILTERS</b> |
-                    <a href="{{ url_for('catalog_page', product_type=product_type) }}">Clear</a>
+                    <a href="{{ url_for('clear_filters', product_type=product_type) }}">Clear</a>
                 </div>
                 <div class="filter-content">
                     <div class="filter-item">
                         <b>Price</b> <br>
                         <label for="start">From</label>
+                        <input id="start" type="number" step="any" autocomplete="off" name="price-start" value="{{ session['price_start'] }}">
                         <label for="end">To</label>
-                        <input id="start" type="number" step="any" autocomplete="off" name="price-start" value="{{ products|min(attribute='price')|attr('price') if products }}">
-                        <input id="end" type="number" step="any" autocomplete="off" name="price-end" value="{{ products|max(attribute='price')|attr('price') if products }}">
+                        <input id="end" type="number" step="any" autocomplete="off" name="price-end" value="{{ session['price_end'] }}">
                     </div>
                     <div class="filter-item">
                         <b>Sort by</b>
@@ -61,7 +66,7 @@
                         <p>Name: {{ product.name }}</p>
                         <p>Price: {{ product.price }}</p>
                         <p>Quantity: {{ product.quantity }}</p>
-                        <a style="visibility: {{ "hidden" if product.quantity == 0 else "visible" }}" href="{{ url_for('add_to_cart', id=product.id) }}">Add to cart</a>
+                        <button {{ "disabled" if product.quantity == 0 }} onclick="add_to_cart({{ product.id }})">Add to cart</button>
                     </article>
                 {% endfor %}
             {% else %}
