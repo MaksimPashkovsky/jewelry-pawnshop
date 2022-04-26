@@ -4,23 +4,33 @@ from operator import attrgetter
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from flask import Flask, render_template, request, redirect, flash, url_for, session
 from flask_login import login_user, current_user, login_required, logout_user, LoginManager
+from flask_admin.contrib.sqla import ModelView
 from flask_toastr import Toastr
+from flask_admin import Admin
 from flask_mail import Mail, Message
 from werkzeug.security import check_password_hash, generate_password_hash
 from decouple import config
 from db_setup import session as db_session
 from models import ProductType, User, Product, CartNote
+from admin_views import ProductView, Controller
+
 
 app = Flask(__name__, static_folder='static')
 app.secret_key = config('APP_SECRET_KEY')
 app.config.from_pyfile('mail_config.cfg')
 app.config.from_pyfile('toastr_config.cfg')
 app.jinja_env.globals['PRODUCT_TYPES'] = db_session.query(ProductType).all()
+app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
 
 url_safe_timed_serializer = URLSafeTimedSerializer(config('URL_SAFE_TIMED_SERIALIZER_SECRET_KEY'))
 login_manager = LoginManager(app)
 toastr = Toastr(app)
 mail = Mail(app)
+admin = Admin(app)
+admin.add_view(Controller(User, db_session))
+admin.add_view(ProductView(Product, db_session))
+admin.add_view(ModelView(CartNote, db_session))
+admin.add_view(ModelView(ProductType, db_session))
 
 
 @login_manager.user_loader
@@ -47,15 +57,19 @@ def login_page():
 
     if user is None:
         flash('User not found!', 'error')
-        return render_template('login.html')
-
-    if not user.is_verified:
-        flash('Account is not verified. Check your email', 'warning')
-        return render_template('login.html')
+        return redirect(url_for('login_page'))
 
     if check_password_hash(user.password, password):
+
+        if not user.is_verified:
+            flash('Account is not verified. Check your email', 'warning')
+            return redirect(url_for('login_page'))
+
         login_user(user)
         next_page = request.form.get('next')
+
+        if user.is_admin:
+            return redirect('/admin')
 
         if next_page:
             return redirect(next_page)
@@ -63,7 +77,7 @@ def login_page():
         return redirect(url_for('main_page'))
 
     flash('Wrong password!', 'error')
-    return render_template('login.html')
+    return redirect(url_for('login_page'))
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -83,7 +97,19 @@ def register_page():
     db_session.add(new_user)
     db_session.commit()
 
-    return redirect(url_for('send_email_again'))
+    return redirect(url_for('send_email'))
+
+
+@app.route('/send_email')
+def send_email():
+    email = session['email']
+    token = url_safe_timed_serializer.dumps(email, salt='salt')
+    msg = Message('Confirm email!', sender='jewelry-shop@yahoo.com', recipients=[email])
+    link = url_for('confirm_email', token=token, _external=True)
+    msg.body = 'Your link is: ' + link
+    mail.send(msg)
+    flash('Email sent')
+    return redirect(url_for('login_page'))
 
 
 @app.route('/confirm_email/<token>')
@@ -97,18 +123,6 @@ def confirm_email(token):
     db_session.add(user)
     db_session.commit()
     return render_template('email_confirm.html', success=True)
-
-
-@app.route('/send_email_again')
-def send_email_again():
-    email = session['email']
-    token = url_safe_timed_serializer.dumps(email, salt='salt')
-    msg = Message('Confirm email!', sender='jewelry-shop@yahoo.com', recipients=[email])
-    link = url_for('confirm_email', token=token, _external=True)
-    msg.body = 'Your link is: ' + link
-    mail.send(msg)
-    flash('Email sent')
-    return redirect(url_for('login_page'))
 
 
 @app.route('/logout', methods=['GET'])
@@ -145,10 +159,10 @@ def catalog_page(product_type):
     price_start = request.form.get('price-start')
     price_end = request.form.get('price-end')
 
-    if price_start == '':
+    if price_start == '' and all_products:
         price_start = min(all_products, key=attrgetter('price')).price
 
-    if price_end == '':
+    if price_end == '' and all_products:
         price_end = max(all_products, key=attrgetter('price')).price
 
     filtered_products = list(filter(lambda x: float(price_start) <= x.price <= float(price_end), all_products))

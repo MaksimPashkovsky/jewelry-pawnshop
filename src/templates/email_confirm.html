@@ -17,7 +17,7 @@
         <a href="{{ url_for('login_page') }}">Go to login page</a>
     {% else %}
         <h1>Your token expired :(</h1>
-        <a href="{{ url_for('send_email_again') }}">Send again</a>
+        <a href="{{ url_for('send_email') }}">Send again</a>
     {% endif %}
 </body>
 </html>

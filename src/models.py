@@ -13,13 +13,18 @@ class User(Base, UserMixin):
     email = sa.Column('email', sa.String)
     is_verified = sa.Column('is_verified', sa.Boolean)
     registration_date = sa.Column('registration date', sa.Date)
+    is_admin = sa.Column('is_admin', sa.Boolean, default=False)
 
-    def __init__(self, login, password, email, reg_date, is_verified):
+    def __init__(self, login, password, email, reg_date, is_verified, is_admin):
         self.login = login
         self.password = password
         self.email = email
         self.registration_date = reg_date
         self.is_verified = is_verified
+        self.is_admin = is_admin
+
+    def __repr__(self):
+        return f'{self.login}'
 
 
 class Product(Base):
@@ -33,12 +38,18 @@ class Product(Base):
     image = sa.Column('image', sa.String)
     type_object = relationship('ProductType')
 
+    def __repr__(self):
+        return f'{self.name}'
+
 
 class ProductType(Base):
     __tablename__ = 'product_types'
 
     id = sa.Column(sa.Integer, primary_key=True)
     name = sa.Column('name', sa.String)
+
+    def __repr__(self):
+        return f'{self.name}'
 
 
 class CartNote(Base):
