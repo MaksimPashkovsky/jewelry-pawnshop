@@ -30,6 +30,9 @@ class DatabaseService:
     def get_user_by_id(self, user_id):
         return self.session.query(User).get(user_id)
 
+    def get_user_by_login(self, login):
+        return self.session.query(User).filter_by(login=login).first()
+
     def get_user_by_email(self, email):
         return self.session.query(User).filter_by(email=email).first()
 

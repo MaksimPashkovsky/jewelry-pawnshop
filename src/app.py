@@ -1,18 +1,18 @@
 import random
 from datetime import datetime
 from operator import attrgetter
-from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from flask import Flask, render_template, request, redirect, flash, url_for, session
 from flask_login import login_user, current_user, login_required, logout_user, LoginManager
 from flask_admin.contrib.sqla import ModelView
 from flask_toastr import Toastr
 from flask_admin import Admin
-from flask_mail import Mail, Message
+from flask_mail import Mail
 from werkzeug.security import check_password_hash, generate_password_hash
 from decouple import config
 from models import ProductType, User, Product, CartNote
 from admin_views import ProductView, Controller
 from database_service import DatabaseService
+import mail_service
 
 storage = DatabaseService()
 
@@ -21,12 +21,10 @@ app.secret_key = config('APP_SECRET_KEY')
 app.config.from_pyfile('mail_config.cfg')
 app.config.from_pyfile('toastr_config.cfg')
 app.jinja_env.globals['PRODUCT_TYPES'] = storage.get_all_product_types()
-app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
 
-url_safe_timed_serializer = URLSafeTimedSerializer(config('URL_SAFE_TIMED_SERIALIZER_SECRET_KEY'))
 login_manager = LoginManager(app)
 toastr = Toastr(app)
-mail = Mail(app)
+mail_service.mail = Mail(app)
 admin = Admin(app)
 admin.add_view(Controller(User, storage.session))
 admin.add_view(ProductView(Product, storage.session))
@@ -54,7 +52,7 @@ def login_page():
 
     login = request.form.get('login')
     password = request.form.get('password')
-    user = User.query.filter_by(login=login).first()
+    user = storage.get_user_by_login(login)
 
     if user is None:
         flash('User not found!', 'error')
@@ -96,20 +94,17 @@ def register_page():
 @app.route('/send_email')
 def send_email():
     email = session['email']
-    token = url_safe_timed_serializer.dumps(email, salt='salt')
-    msg = Message('Confirm email!', sender='jewelry-shop@yahoo.com', recipients=[email])
-    link = url_for('confirm_email', token=token, _external=True)
-    msg.body = 'Your link is: ' + link
-    mail.send(msg)
-    flash('Email sent')
+    token = mail_service.generate_token(email)
+    body = 'Your link is: ' + url_for('confirm_email', token=token, _external=True)
+    mail_service.send_email(email, body)
+    flash('Email sent', 'success')
     return redirect(url_for('login_page'))
 
 
 @app.route('/confirm_email/<token>')
 def confirm_email(token):
-    try:
-        email = url_safe_timed_serializer.loads(token, salt='salt', max_age=3600)
-    except SignatureExpired:
+    email = mail_service.retrieve_email(token)
+    if not email:
         return render_template('email_confirm.html', success=False)
     user = storage.get_user_by_email(email)
     user.is_verified = True
@@ -215,7 +210,7 @@ def confirm():
         product.quantity -= 1
         storage.save(product)
         storage.delete(note)
-
+    flash('Thanks!', 'success')
     return redirect(url_for('main_page'))
 
 

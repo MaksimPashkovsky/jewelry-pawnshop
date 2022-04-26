@@ -8,11 +8,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/cart.css') }}">
 {% endblock %}
 
-{% block script %}
-    <script>
-    </script>
-{% endblock %}
-
 {% block main %}
     <div class="cart">
         <div class="cart-items">
@@ -35,7 +30,7 @@
             <p>Products in cart: {{ products|length }}</p>
             <a href="{{ url_for('remove_all_from_cart') }}">Remove all</a>
             <p>Total price: {{ products|sum(attribute='price') }}</p>
-            <a href="{{ url_for('confirm') }}">Confirm</a>
+            <a {{ "hidden" if not products }} href="{{ url_for('confirm') }}">Confirm</a>
         </div>
     </div>
 {% endblock %}
