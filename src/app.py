@@ -13,15 +13,8 @@ from models import ProductType, User, Product, CartNote
 
 app = Flask(__name__, static_folder='static')
 app.secret_key = config('APP_SECRET_KEY')
-app.config['TOASTR_POSITION_CLASS'] = 'toast-bottom-right'
-app.config['TOASTR_PROGRESS_BAR'] = 'false'
-app.config['TOASTR_TIMEOUT'] = 1500
-app.config['MAIL_SERVER'] = config('MAIL_SERVER')
-app.config['MAIL_PORT'] = config('MAIL_PORT', cast=int)
-app.config['MAIL_USERNAME'] = config('MAIL_USERNAME')
-app.config['MAIL_PASSWORD'] = config('MAIL_PASSWORD')
-app.config['MAIL_USE_TLS'] = config('MAIL_USE_TLS', cast=bool)
-app.config['MAIL_USE_SSL'] = config('MAIL_USE_SSL', cast=bool)
+app.config.from_pyfile('mail_config.cfg')
+app.config.from_pyfile('toastr_config.cfg')
 app.jinja_env.globals['PRODUCT_TYPES'] = db_session.query(ProductType).all()
 
 url_safe_timed_serializer = URLSafeTimedSerializer(config('URL_SAFE_TIMED_SERIALIZER_SECRET_KEY'))
@@ -52,12 +45,12 @@ def login_page():
     password = request.form.get('password')
     user = User.query.filter_by(login=login).first()
 
-    if not user.is_verified:
-        flash('Account is not verified. Check your email', 'warning')
-        return render_template('login.html')
-
     if user is None:
         flash('User not found!', 'error')
+        return render_template('login.html')
+
+    if not user.is_verified:
+        flash('Account is not verified. Check your email', 'warning')
         return render_template('login.html')
 
     if check_password_hash(user.password, password):
