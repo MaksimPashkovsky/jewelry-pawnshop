@@ -10,16 +10,17 @@ from flask_admin import Admin
 from flask_mail import Mail, Message
 from werkzeug.security import check_password_hash, generate_password_hash
 from decouple import config
-from db_setup import session as db_session
 from models import ProductType, User, Product, CartNote
 from admin_views import ProductView, Controller
+from database_service import DatabaseService
 
+storage = DatabaseService()
 
 app = Flask(__name__, static_folder='static')
 app.secret_key = config('APP_SECRET_KEY')
 app.config.from_pyfile('mail_config.cfg')
 app.config.from_pyfile('toastr_config.cfg')
-app.jinja_env.globals['PRODUCT_TYPES'] = db_session.query(ProductType).all()
+app.jinja_env.globals['PRODUCT_TYPES'] = storage.get_all_product_types()
 app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
 
 url_safe_timed_serializer = URLSafeTimedSerializer(config('URL_SAFE_TIMED_SERIALIZER_SECRET_KEY'))
@@ -27,20 +28,20 @@ login_manager = LoginManager(app)
 toastr = Toastr(app)
 mail = Mail(app)
 admin = Admin(app)
-admin.add_view(Controller(User, db_session))
-admin.add_view(ProductView(Product, db_session))
-admin.add_view(ModelView(CartNote, db_session))
-admin.add_view(ModelView(ProductType, db_session))
+admin.add_view(Controller(User, storage.session))
+admin.add_view(ProductView(Product, storage.session))
+admin.add_view(ModelView(CartNote, storage.session))
+admin.add_view(ModelView(ProductType, storage.session))
 
 
 @login_manager.user_loader
 def load_user(user_id):
-    return db_session.query(User).get(user_id)
+    return storage.get_user_by_id(user_id)
 
 
 @app.route('/')
 def main_page():
-    all_products = db_session.query(Product).all()
+    all_products = storage.get_all_products()
     random_products = random.sample(all_products, 3)
     return render_template('main_page.html', random_products=random_products)
 
@@ -60,22 +61,16 @@ def login_page():
         return redirect(url_for('login_page'))
 
     if check_password_hash(user.password, password):
-
         if not user.is_verified:
             flash('Account is not verified. Check your email', 'warning')
             return redirect(url_for('login_page'))
-
         login_user(user)
         next_page = request.form.get('next')
-
         if user.is_admin:
             return redirect('/admin')
-
         if next_page:
             return redirect(next_page)
-
         return redirect(url_for('main_page'))
-
     flash('Wrong password!', 'error')
     return redirect(url_for('login_page'))
 
@@ -92,11 +87,9 @@ def register_page():
     session['email'] = email
 
     new_user = User(login=login, password=generate_password_hash(password),
-                    email=email, reg_date=datetime.now(), is_verified=False)
+                    email=email, reg_date=datetime.now(), is_verified=False, is_admin=False)
 
-    db_session.add(new_user)
-    db_session.commit()
-
+    storage.save(new_user)
     return redirect(url_for('send_email'))
 
 
@@ -118,10 +111,9 @@ def confirm_email(token):
         email = url_safe_timed_serializer.loads(token, salt='salt', max_age=3600)
     except SignatureExpired:
         return render_template('email_confirm.html', success=False)
-    user = db_session.query(User).filter_by(email=email).first()
+    user = storage.get_user_by_email(email)
     user.is_verified = True
-    db_session.add(user)
-    db_session.commit()
+    storage.save(user)
     return render_template('email_confirm.html', success=True)
 
 
@@ -143,14 +135,10 @@ def redirect_to_sign_in(response):
 @app.route('/catalog/<product_type>', methods=['GET', 'POST'])
 def catalog_page(product_type):
 
-    product_type_object = db_session.query(ProductType)\
-        .filter_by(name=product_type.capitalize())\
-        .first()
+    product_type_object = storage.get_product_type_by_name(product_type.capitalize())
 
     # All products of concrete type
-    all_products = db_session.query(Product)\
-        .filter_by(type=product_type_object.id)\
-        .all()
+    all_products = storage.get_products_by_type(product_type_object.id)
 
     if request.method == 'GET':
         return render_template('catalog.html', product_type=product_type,
@@ -181,7 +169,7 @@ def catalog_page(product_type):
 
 @app.route('/catalog/product/<id>')
 def product_page(id):
-    product = db_session.query(Product).filter_by(id=id).first()
+    product = storage.get_product_by_id(id)
     return render_template('product.html', product=product)
 
 
@@ -198,27 +186,22 @@ def add_to_cart():
     data = request.get_json()
     id = data['id']
     new_cart_note = CartNote(user_id=current_user.id, product_id=id)
-    db_session.add(new_cart_note)
-    db_session.commit()
+    storage.save(new_cart_note)
     return '', 204
 
 
 @app.route('/remove-from-cart/<id>', methods=['GET'])
 @login_required
 def remove_from_cart(id):
-    note_to_delete = db_session.query(CartNote)\
-        .filter_by(user_id=current_user.id, product_id=id)\
-        .first()
-    db_session.delete(note_to_delete)
-    db_session.commit()
+    note_to_delete = storage.get_cart_note(current_user.id, id)
+    storage.delete(note_to_delete)
     flash('Removed from cart')
     return redirect(url_for('cart_page'))
 
 
 @app.route('/remove-all-from-cart', methods=['GET'])
 def remove_all_from_cart():
-    db_session.query(CartNote).filter_by(user_id=current_user.id).delete(synchronize_session='fetch')
-    db_session.commit()
+    storage.delete_cart_notes_by_user_id(current_user.id)
     flash('Removed all')
     return redirect(url_for('cart_page'))
 
@@ -226,17 +209,12 @@ def remove_all_from_cart():
 @app.route('/confirm', methods=['GET'])
 @login_required
 def confirm():
-    cart_notes = db_session.query(CartNote)\
-        .filter_by(user_id=current_user.id)\
-        .all()
-
+    cart_notes = storage.get_cart_notes_by_user_id(current_user.id)
     for note in cart_notes:
-        product = db_session.query(Product).filter_by(id=note.product_id).first()
+        product = storage.get_product_by_id(note.product_id)
         product.quantity -= 1
-        db_session.add(product)
-        db_session.commit()
-        db_session.delete(note)
-        db_session.commit()
+        storage.save(product)
+        storage.delete(note)
 
     return redirect(url_for('main_page'))
 
@@ -244,10 +222,6 @@ def confirm():
 @app.route('/cart', methods=['GET'])
 @login_required
 def cart_page():
-    cart_notes = db_session.query(CartNote)\
-        .filter_by(user_id=current_user.id)\
-        .all()
-
+    cart_notes = storage.get_cart_notes_by_user_id(current_user.id)
     products = [note.product for note in cart_notes]
-
     return render_template('cart.html', products=products)
