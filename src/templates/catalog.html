@@ -64,7 +64,7 @@
                     <article class="catalog-item">
                         <div class="catalog-item-image">
                             <a href={{ url_for('product_page', id=product.id) }}>
-                                <img src="{{ url_for('static', filename='images/' + product.image) if product.image else url_for('static', filename='images/no-image.png') }}" alt="#" height="170" width="230">
+                                <img src="{{ url_for('static', filename='images/' + product.image) if product.image else url_for('static', filename='images/no-image.png') }}" alt="#" height="200" width="230">
                             </a>
                         </div>
                         <p>Name: {{ product.name }}</p>

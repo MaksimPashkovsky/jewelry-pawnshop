@@ -28,6 +28,10 @@
     border: thin solid;
 }
 
+.catalog-item p {
+    margin: 0;
+}
+
 .catalog-item-image {
     text-align: center;
 }

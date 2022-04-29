@@ -10,18 +10,20 @@ class User(Base, UserMixin):
     id = sa.Column(sa.Integer, primary_key=True)
     login = sa.Column('login', sa.String, unique=True)
     password = sa.Column('password', sa.String)
-    email = sa.Column('email', sa.String)
+    email = sa.Column('email', sa.String, unique=True)
     is_verified = sa.Column('is_verified', sa.Boolean)
     registration_date = sa.Column('registration date', sa.Date)
     is_admin = sa.Column('is_admin', sa.Boolean, default=False)
+    balance = sa.Column('balance', sa.Numeric, default=0)
 
-    def __init__(self, login, password, email, reg_date, is_verified, is_admin):
+    def __init__(self, login, password, email, reg_date, is_verified=False, is_admin=False, balance=0):
         self.login = login
         self.password = password
         self.email = email
         self.registration_date = reg_date
         self.is_verified = is_verified
         self.is_admin = is_admin
+        self.balance = balance
 
     def __repr__(self):
         return f'{self.login}'

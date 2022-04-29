@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    <title>Profile</title>
+{% endblock %}
+
+{% block links %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/profile.css') }}">
+{% endblock %}
+
+{% block script %}
+    <script>
+        toastr.options.positionClass = "toast-top-center";
+        toastr.options.timeOut = 5000;
+
+        function save_login() {
+            login_input = document.getElementById('login')
+
+            if (login_input.value.length < 8 || login_input.value.length > 50) {
+                toastr.warning('Login must be 8-50 characters!');
+                login_input.focus()
+                return;
+            }
+
+            fetch("{{ url_for('save_profile_info') }}", {
+                method: "POST",
+                body: JSON.stringify({login: login_input.value}),
+                headers: { "Content-type": "application/json; charset=UTF-8", },
+            }).then(function (response) {
+                if (response.ok) {
+                    toastr.success('Successfully saved');
+                }
+                else {
+                    toastr.error('Such login already in use!');
+                    login_input.value = "{{ current_user.login }}"
+                }
+            });
+        }
+        function save_email() {
+            email_input = document.getElementById('email')
+            fetch("{{ url_for('save_profile_info') }}", {
+                method: "POST",
+                body: JSON.stringify({email: email_input.value}),
+                headers: { "Content-type": "application/json; charset=UTF-8", },
+            }).then(function (response) {
+                if (response.ok) {
+                    toastr.success('Successfully saved');
+                }
+                else {
+                    toastr.error('Such email already in use!');
+                    email_input.value = "{{ current_user.email }}"
+                }
+            });
+        }
+        function save_balance() {
+            balance = document.getElementById('balance')
+            balance_input = document.getElementById('balance-plus')
+
+            fetch("{{ url_for('save_profile_info') }}", {
+                method: "POST",
+                body: JSON.stringify({balance: Number(balance_input.value) + Number(balance.value) }),
+                headers: { "Content-type": "application/json; charset=UTF-8", },
+            }).then(function (response) {
+                if (response.ok) {
+                    toastr.success('Successfully added');
+                    balance.value = Number(balance_input.value) + Number(balance.value)
+                }
+
+            });
+        }
+    </script>
+{% endblock %}
+
+{% block main %}
+    <div class="profile-content">
+        <h2>Personal info</h2>
+        <div class="profile-item">
+            <label>Login</label>
+            <input type="text" value="{{ current_user.login }}" id="login">
+            <button onclick="save_login()">Save</button>
+        </div>
+        <div class="profile-item">
+            <a href="#">Change password</a>
+        </div>
+        <div class="profile-item">
+            <label>Email</label>
+            <input type="email" value="{{ current_user.email }}" id="email">
+            <button onclick="save_email()">Save</button>
+        </div>
+        <div class="profile-item">
+            <label>Balance</label>
+            <input value="{{ current_user.balance }}" readonly id="balance">
+            <button onclick="save_balance()">+</button>
+            <input type="number" id="balance-plus">
+        </div>
+    </div>
+{% endblock %}

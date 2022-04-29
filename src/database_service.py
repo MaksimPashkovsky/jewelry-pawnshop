@@ -56,3 +56,12 @@ class DatabaseService:
     def delete_cart_notes_by_user_id(self, user_id):
         self.session.query(CartNote).filter_by(user_id=user_id).delete(synchronize_session='fetch')
         self.session.commit()
+
+    def get_all_logins(self):
+        return [item[0] for item in self.session.query(User.login).all()]
+
+    def get_all_emails(self):
+        return [item[0] for item in self.session.query(User.email).all()]
+
+    def get_user_column(self, field: str):
+        return [item[0] for item in self.session.query(getattr(User, field)).all()]

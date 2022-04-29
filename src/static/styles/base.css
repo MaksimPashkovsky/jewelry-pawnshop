@@ -12,6 +12,10 @@ body {
     font-family: 'century gothic', monospace;
 }
 
+input {
+    font-family: 'century gothic', monospace;
+}
+
 header {
     border-bottom: solid;
     padding-bottom: 10px;
@@ -29,7 +33,8 @@ a.text {
 }
 
 a.text:hover {
-    color: indigo;
+    font-weight: bold;
+    color: darkturquoise;
 }
 
 .header-right {

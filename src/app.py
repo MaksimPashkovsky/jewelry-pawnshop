@@ -65,7 +65,7 @@ def login_page():
         login_user(user)
         next_page = request.form.get('next')
         if user.is_admin:
-            return redirect('/admin')
+            return redirect('/admin/')
         if next_page:
             return redirect(next_page)
         return redirect(url_for('main_page'))
@@ -82,6 +82,15 @@ def register_page():
     login = request.form.get('login')
     password = request.form.get('password')
     email = request.form.get('email')
+
+    if login in storage.get_all_logins():
+        flash('Such login already in use!', 'error')
+        return redirect(url_for('register_page'))
+
+    if email in storage.get_all_emails():
+        flash('Such email already in use!', 'error')
+        return redirect(url_for('register_page'))
+
     session['email'] = email
 
     new_user = User(login=login, password=generate_password_hash(password),
@@ -220,3 +229,25 @@ def cart_page():
     cart_notes = storage.get_cart_notes_by_user_id(current_user.id)
     products = [note.product for note in cart_notes]
     return render_template('cart.html', products=products)
+
+
+@app.route('/profile', methods=['GET'])
+@login_required
+def profile_page():
+    return render_template('profile.html')
+
+
+@app.route('/profile/save', methods=['POST'])
+def save_profile_info():
+    data = request.get_json()
+    field, value = tuple(data.items())[0]
+
+    if field != 'balance' and value in storage.get_user_column(field):
+        return '', 500
+
+    user = storage.get_user_by_id(current_user.id)
+    setattr(user, field, value)
+    storage.save(user)
+    return '', 200
+
+
