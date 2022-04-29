@@ -213,14 +213,18 @@ def remove_all_from_cart():
 @app.route('/confirm', methods=['GET'])
 @login_required
 def confirm():
+    total_sum = 0
     cart_notes = storage.get_cart_notes_by_user_id(current_user.id)
     for note in cart_notes:
         product = storage.get_product_by_id(note.product_id)
+        total_sum += product.price
         product.quantity -= 1
         storage.save(product)
         storage.delete(note)
-    flash('Thanks!', 'success')
-    return redirect(url_for('main_page'))
+
+    user = storage.get_user_by_id(current_user.id)
+    user.balance -= total_sum
+    return '', 200
 
 
 @app.route('/cart', methods=['GET'])
@@ -251,3 +255,17 @@ def save_profile_info():
     return '', 200
 
 
+@app.route('/profile/change-password', methods=['POST'])
+def change_password():
+    data = request.get_json()
+    old_password = data['old_password']
+    new_password = data['new_password']
+
+    user = storage.get_user_by_id(current_user.id)
+
+    if check_password_hash(user.password, old_password):
+        user.password = generate_password_hash(new_password)
+        storage.save(user)
+        return '', 200
+
+    return '', 500

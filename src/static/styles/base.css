@@ -40,6 +40,8 @@ a.text:hover {
 .header-right {
     min-width: 100px;
     min-height: 1em;
+    max-width: 190px;
+    margin-left: -20px;
 }
 
 .header-left {

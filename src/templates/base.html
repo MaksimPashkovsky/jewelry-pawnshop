@@ -27,7 +27,7 @@
                 </div>
                 <ul class="header-right">
                     {% if current_user.is_authenticated %}
-                        <a href="{{ url_for('profile_page') }}" class="text">{{ current_user.login }}</a>
+                        <a href="{{ url_for('profile_page') }}" class="text">{{ current_user.login }} (${{ current_user.balance }})</a>
                         <li><a href="{{ url_for('cart_page') }}" class="text">Cart</a></li>
                         <li><a class="text" href="{{ url_for('logout_page') }}">Sign out</a></li>
                     {% else %}

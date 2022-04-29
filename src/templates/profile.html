@@ -68,6 +68,32 @@
 
             });
         }
+        function change_password() {
+            old_password_input = document.getElementById("old-password")
+            new_password_input = document.getElementById("new-password")
+
+            if (new_password_input.value.length < 8 || new_password_input.value.length > 50) {
+                toastr.warning('Password must be 8-50 characters!');
+                new_password_input.focus()
+                return;
+            }
+
+            fetch("{{ url_for('change_password') }}", {
+                method: "POST",
+                body: JSON.stringify({
+                    old_password: old_password_input.value,
+                    new_password: new_password_input.value
+                }),
+                headers: { "Content-type": "application/json; charset=UTF-8", },
+            }).then(function (response) {
+                if (response.ok) {
+                    toastr.success('Successfully saved');
+                }
+                else {
+                    toastr.error('Error');
+                }
+            });
+        }
     </script>
 {% endblock %}
 
@@ -80,7 +106,13 @@
             <button onclick="save_login()">Save</button>
         </div>
         <div class="profile-item">
-            <a href="#">Change password</a>
+            <label>Old password</label>
+            <input type="password" id="old-password">
+        </div>
+        <div class="profile-item">
+            <label>New password</label>
+            <input type="password" id="new-password">
+            <button onclick="change_password()">Change password</button>
         </div>
         <div class="profile-item">
             <label>Email</label>

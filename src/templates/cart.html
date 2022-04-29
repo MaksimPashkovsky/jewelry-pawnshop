@@ -8,6 +8,34 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/cart.css') }}">
 {% endblock %}
 
+{% block script %}
+    <script>
+        toastr.options.positionClass = "toast-top-center";
+        toastr.options.timeOut = 5000;
+
+        function confirm() {
+
+            bal = "{{ current_user.balance }}"
+            price = "{{ products|sum(attribute='price') }}"
+
+            console.log(bal)
+            console.log(price)
+
+            if (Number(bal) < Number(price)) {
+                toastr.warning('Not enough money on account! <br><a href="{{ url_for('profile_page') }}">Top up</a>');
+                return;
+            }
+
+            fetch("{{ url_for('confirm') }}", {
+                method: "GET",
+            }).then(function (response) {
+                toastr.success('Thank you!');
+                setTimeout(() => { window.location.replace("{{ url_for('main_page') }}") }, 1000);
+            });
+        }
+    </script>
+{% endblock %}
+
 {% block main %}
     <div class="cart">
         <div class="cart-items">
@@ -15,7 +43,7 @@
                 {% for product in products %}
                     <div class="cart-item">
                         <div class="cart-item-image">
-                            <img src="../static/images/{{ product.image if product.image else "no-image.png" }}" alt="#" height="170" width="230">
+                            <img src="../static/images/{{ product.image if product.image else "no-image.png" }}" alt="#" height="200" width="230">
                         </div>
                         <p>Name: {{ product.name }}</p>
                         <p>Price: {{ product.price }}</p>
@@ -30,7 +58,8 @@
             <p>Products in cart: {{ products|length }}</p>
             <a href="{{ url_for('remove_all_from_cart') }}">Remove all</a>
             <p>Total price: {{ products|sum(attribute='price') }}</p>
-            <a {{ "hidden" if not products }} href="{{ url_for('confirm') }}">Confirm</a>
+            <!-- <a {{ "hidden" if not products }} href="{{ url_for('confirm') }}">Confirm</a> -->
+            <button {{ "hidden" if not products }} onclick="confirm()">Confirm</button>
         </div>
     </div>
 {% endblock %}
