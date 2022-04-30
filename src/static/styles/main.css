@@ -3,10 +3,6 @@
     font-size: 40px;
 }
 
-.best-offers-item-info p {
-    margin: 0;
-}
-
 .best-offers-container {
     display: flex;
     flex: 1;
@@ -20,6 +16,10 @@
     height: 300px;
     margin: 40px;
     border: thin solid;
+}
+
+.best-offers-item-info p {
+    margin: 0 0 0 10px;
 }
 
 .best-offers-item-image {

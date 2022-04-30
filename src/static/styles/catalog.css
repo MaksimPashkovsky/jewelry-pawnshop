@@ -7,6 +7,21 @@
     background-color: bisque;
     display: block;
     padding: 10px;
+    font-size: 20px;
+}
+
+.catalog-filter button[type="submit"] {
+    font-size: 20px;
+}
+
+.filter-item select {
+    font-size: 20px;
+}
+
+.filter-item input {
+    font-size: 20px;
+    width: 100px;
+    text-align: center;
 }
 
 .filter-head {
@@ -32,6 +47,23 @@
     margin: 0;
 }
 
+.catalog-item-info p:not(:first-child) {
+    margin-left: 10px;
+}
+
+.catalog-item button {
+    margin-right: 10px;
+    border-radius: 5px;
+    border-width: thin;
+    background-color: deepskyblue;
+    font-family: 'century gothic', monospace;
+    font-size: 16px;
+}
+
+.catalog-item button:hover {
+    cursor: pointer;
+}
+
 .catalog-item-image {
     text-align: center;
 }
@@ -41,12 +73,24 @@
     border-width: thin;
     margin-bottom: 10px;
     padding-top: 10px;
-
 }
 
-#start, #end {
-    width: 60px;
-    text-align: center;
+.filter-item p {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.catalog-filter button[type='submit'] {
+    padding: 10px;
+    border-radius: 30px;
+    border-width: thin;
+    background-color: aqua;
+    font-size: 18px;
+    width: 100px;
+}
+
+.catalog-filter button[type='submit']:hover {
+    cursor: pointer;
 }
 
 #sorting-options {

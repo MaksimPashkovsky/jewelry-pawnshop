@@ -14,12 +14,8 @@
         toastr.options.timeOut = 5000;
 
         function confirm() {
-
             bal = "{{ current_user.balance }}"
             price = "{{ products|sum(attribute='price') }}"
-
-            console.log(bal)
-            console.log(price)
 
             if (Number(bal) < Number(price)) {
                 toastr.warning('Not enough money on account! <br><a href="{{ url_for('profile_page') }}">Top up</a>');
@@ -45,9 +41,14 @@
                         <div class="cart-item-image">
                             <img src="../static/images/{{ product.image if product.image else "no-image.png" }}" alt="#" height="200" width="230">
                         </div>
-                        <p>Name: {{ product.name }}</p>
-                        <p>Price: {{ product.price }}</p>
-                        <a href="{{ url_for('remove_from_cart', id=product.id) }}">Remove</a>
+                        <div class="cart-item-info">
+                            <p style="text-align: center"><b>{{ product.name }}</b></p>
+                            <p>Price: {{ product.price }}</p>
+                        </div>
+                        <p style="text-align: right">
+                        <a href="{{ url_for('remove_from_cart', id=product.id) }}">
+                            <button>Remove</button>
+                        </a></p>
                     </div>
                 {% endfor %}
             {% else %}
@@ -56,10 +57,9 @@
         </div>
         <div class="payment">
             <p>Products in cart: {{ products|length }}</p>
-            <a href="{{ url_for('remove_all_from_cart') }}">Remove all</a>
-            <p>Total price: {{ products|sum(attribute='price') }}</p>
-            <!-- <a {{ "hidden" if not products }} href="{{ url_for('confirm') }}">Confirm</a> -->
-            <button {{ "hidden" if not products }} onclick="confirm()">Confirm</button>
+            <a class="text" style="text-decoration: underline" href="{{ url_for('remove_all_from_cart') }}">Remove all</a>
+            <p>Total price: ${{ products|sum(attribute='price') }}</p>
+            <p style="text-align: center"><button {{ "hidden" if not products }} onclick="confirm()">Confirm</button></p>
         </div>
     </div>
 {% endblock %}

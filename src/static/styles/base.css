@@ -7,7 +7,6 @@ body {
     min-height: 100%;
     display: grid;
     grid-template-rows: auto 1fr auto;
-
     background-color: #fffff0;
     font-family: 'century gothic', monospace;
 }
@@ -33,15 +32,18 @@ a.text {
 }
 
 a.text:hover {
-    font-weight: bold;
     color: darkturquoise;
 }
 
 .header-right {
-    min-width: 100px;
+    min-width: 160px;
     min-height: 1em;
     max-width: 190px;
-    margin-left: -20px;
+    margin-right: 10px;
+}
+
+.header-right p {
+    text-align: center;
 }
 
 .header-left {
@@ -55,22 +57,22 @@ a.text:hover {
     padding: 10px;
 }
 
-.types-list {
+.header-bottom ul {
     display: block;
     margin: auto;
     padding: 0;
 }
 
-.types-menu-item {
+.header-bottom ul li {
     display: inline;
     padding: 10px;
 }
 
-.container {
+.header-top {
     display: flex;
 }
 
-.footer {
+footer {
     border-top: solid;
     border-width: thin;
     padding: 10px;

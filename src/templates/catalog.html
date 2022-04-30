@@ -34,28 +34,26 @@
         <div class="catalog-filter">
             <form method="post" action="{{ url_for('catalog_page', product_type=product_type) }}">
                 <div class="filter-head">
-                    <b>FILTERS</b> |
-                    <a href="{{ url_for('clear_filters', product_type=product_type) }}">Clear</a>
+                    <b>F I L T E R S</b> |
+                    <a class="text" style="text-decoration: underline" href="{{ url_for('clear_filters', product_type=product_type) }}">Clear</a>
                 </div>
-                <div class="filter-content">
-                    <div class="filter-item">
-                        <b>Price</b> <br>
-                        <label for="start">From</label>
-                        <input id="start" type="number" step="any" autocomplete="off" name="price-start" value="{{ session['price_start'] }}">
-                        <label for="end">To</label>
-                        <input id="end" type="number" step="any" autocomplete="off" name="price-end" value="{{ session['price_end'] }}">
-                    </div>
-                    <div class="filter-item">
-                        <b>Sort by</b>
-                        <select name="sorting" id="sorting-options">
-                            <option value="name-asc">↑ Name</option>
-                            <option value="name-desc">↓ Name</option>
-                            <option value="price-asc">↑ Price</option>
-                            <option value="price-desc">↓ Price</option>
-                        </select>
-                    </div>
+                <div class="filter-item">
+                    <p><b>Price</b></p>
+                    <label>From</label>
+                    <input type="number" step="any" autocomplete="off" name="price-start" value="{{ session['price_start'] }}">
+                    <label>To</label>
+                    <input type="number" step="any" autocomplete="off" name="price-end" value="{{ session['price_end'] }}">
                 </div>
-                <button type="submit">Apply</button>
+                <div class="filter-item">
+                    <b>Sort by</b>
+                    <select name="sorting" id="sorting-options">
+                        <option value="name-asc">↑ Name</option>
+                        <option value="name-desc">↓ Name</option>
+                        <option value="price-asc">↑ Price</option>
+                        <option value="price-desc">↓ Price</option>
+                    </select>
+                </div>
+                <div style="text-align: center"><button type="submit">Apply</button></div>
             </form>
         </div>
         <div class="catalog-wrap">
@@ -67,10 +65,12 @@
                                 <img src="{{ url_for('static', filename='images/' + product.image) if product.image else url_for('static', filename='images/no-image.png') }}" alt="#" height="200" width="230">
                             </a>
                         </div>
-                        <p>Name: {{ product.name }}</p>
-                        <p>Price: {{ product.price }}</p>
-                        <p>Quantity: {{ product.quantity }}</p>
-                        <button {{ "disabled" if product.quantity == 0 }} onclick="add_to_cart({{ product.id }})">Add to cart</button>
+                        <div class="catalog-item-info">
+                            <p style="text-align: center"><b>{{ product.name }}</b></p>
+                            <p>Price: ${{ product.price }}</p>
+                            <p>Quantity: {{ product.quantity }}</p>
+                        </div>
+                        <div style="text-align: right"><button {{ "disabled" if product.quantity == 0 }} onclick="add_to_cart({{ product.id }})">Add to cart</button></div>
                     </article>
                 {% endfor %}
             {% else %}

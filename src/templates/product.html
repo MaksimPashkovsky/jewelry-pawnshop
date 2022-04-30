@@ -8,6 +8,33 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/product.css') }}">
 {% endblock %}
 
+{% block script %}
+    <script>
+        function add_to_cart(id) {
+            toastr.options.positionClass = "toast-bottom-right";
+            toastr.options.timeOut = 1500;
+            fetch("{{ url_for('add_to_cart') }}", {
+                method: "POST",
+                body: JSON.stringify({ id: id, }),
+                headers: { "Content-type": "application/json; charset=UTF-8", },
+            }).then(toastr.success('Added to cart'));
+        }
+    </script>
+{% endblock %}
+
 {% block main %}
-    <img src="{{ url_for('static', filename='images/' + (product.image if product.image else "no-image.png")) }}" alt="#">
+    <div class="product">
+        <div class="product-image">
+            <img src="{{ url_for('static', filename='images/' + (product.image if product.image else "no-image.png")) }}" alt="#">
+        </div>
+        <div class="product-description">
+            <h2>Description:</h2>
+            <p>Name: {{ product.name }}</p>
+            <p>Type: {{ product.type_object.name }}</p>
+            <p>Price: ${{ product.price }}</p>
+            <p>Quantity: {{ product.quantity }}</p>
+            <p>Number of purchases: {{ num_of_purchases }}</p>
+            <button onclick="add_to_cart({{ product.id }})">Add to cart</button>
+        </div>
+    </div>
 {% endblock %}

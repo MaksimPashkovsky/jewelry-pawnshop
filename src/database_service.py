@@ -68,3 +68,6 @@ class DatabaseService:
 
     def get_all_history_notes_by_user_id(self, user_id):
         return self.session.query(HistoryNote).filter_by(user_id=user_id).all()
+
+    def get_all_history_notes_by_product_id(self, product_id):
+        return self.session.query(HistoryNote).filter_by(product_id=product_id).all()

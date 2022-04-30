@@ -175,7 +175,8 @@ def catalog_page(product_type):
 @app.route('/catalog/product/<id>')
 def product_page(id):
     product = storage.get_product_by_id(id)
-    return render_template('product.html', product=product)
+    num_of_purchases = len(storage.get_all_history_notes_by_product_id(id))
+    return render_template('product.html', product=product, num_of_purchases=num_of_purchases)
 
 
 @app.route('/clear-filters/<product_type>')
@@ -283,5 +284,5 @@ def history_page():
     for k, v in d:
         res[k].append(v)
     final = [{'date': k, 'items': v} for k, v in res.items()]
-    print(final)
+    final.sort(key=lambda x: x['date'], reverse=True)
     return render_template('history.html', notes=final)
