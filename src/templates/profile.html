@@ -99,31 +99,34 @@
 
 {% block main %}
     <div class="profile-content">
-        <h2>Personal info</h2>
-        <div class="profile-item">
-            <label>Login</label>
-            <input type="text" value="{{ current_user.login }}" id="login">
-            <button onclick="save_login()">Save</button>
+        <div class="personal-info">
+            <h2>Personal info</h2>
+            <div class="profile-item">
+                <label>Login</label>
+                <input type="text" value="{{ current_user.login }}" id="login">
+                <button onclick="save_login()">Save</button>
+            </div>
+            <div class="profile-item">
+                <label>Old password</label>
+                <input type="password" id="old-password">
+            </div>
+            <div class="profile-item">
+                <label>New password</label>
+                <input type="password" id="new-password">
+                <button onclick="change_password()">Change password</button>
+            </div>
+            <div class="profile-item">
+                <label>Email</label>
+                <input type="email" value="{{ current_user.email }}" id="email">
+                <button onclick="save_email()">Save</button>
+            </div>
+            <div class="profile-item">
+                <label>Balance</label>
+                <input value="{{ current_user.balance }}" readonly id="balance">
+                <button onclick="save_balance()">+</button>
+                <input type="number" id="balance-plus">
+            </div>
         </div>
-        <div class="profile-item">
-            <label>Old password</label>
-            <input type="password" id="old-password">
-        </div>
-        <div class="profile-item">
-            <label>New password</label>
-            <input type="password" id="new-password">
-            <button onclick="change_password()">Change password</button>
-        </div>
-        <div class="profile-item">
-            <label>Email</label>
-            <input type="email" value="{{ current_user.email }}" id="email">
-            <button onclick="save_email()">Save</button>
-        </div>
-        <div class="profile-item">
-            <label>Balance</label>
-            <input value="{{ current_user.balance }}" readonly id="balance">
-            <button onclick="save_balance()">+</button>
-            <input type="number" id="balance-plus">
-        </div>
+        <a class="text" style="text-decoration: underline" href="{{ url_for('history_page') }}">My purchase history</a>
     </div>
 {% endblock %}

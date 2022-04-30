@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    <title>Purchase history</title>
+{% endblock %}
+
+{% block links %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/history.css') }}">
+{% endblock %}
+
+{% block script %}
+    <script>
+
+    </script>
+{% endblock %}
+
+{% block main %}
+    <div class="history-content">
+        {% if notes %}
+            {% for note in notes %}
+                <div class="history-row">
+                    <h3>Date: {{ note['date'] }}</h3>
+                    <div class="history-items">
+                        {% for item in note['items'] %}
+                            <div class="history-item">
+                                <div class="history-item-image">
+                                    <img src="../static/images/{{ item.product.image if item.product.image else "no-image.png" }}" alt="#" height="200" width="230">
+                                </div>
+                                <div class="history-item-info">
+                                    <p>Name: {{ item.product.name }}</p>
+                                    <p>Price: {{ item.product.price }}</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {{ set }}
+                    <h4>Total sum: {{ note['items']|sum(attribute='product.price') }}</h4>
+                </div>
+            {% endfor %}
+        {% else %}
+            Nothing here...
+        {% endif %}
+    </div>
+{% endblock %}

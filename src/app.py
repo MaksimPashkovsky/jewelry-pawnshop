@@ -1,6 +1,7 @@
 import random
 from datetime import datetime
 from operator import attrgetter
+from collections import defaultdict
 from flask import Flask, render_template, request, redirect, flash, url_for, session
 from flask_login import login_user, current_user, login_required, logout_user, LoginManager
 from flask_admin.contrib.sqla import ModelView
@@ -9,7 +10,7 @@ from flask_admin import Admin
 from flask_mail import Mail
 from werkzeug.security import check_password_hash, generate_password_hash
 from decouple import config
-from models import ProductType, User, Product, CartNote
+from models import ProductType, User, Product, CartNote, HistoryNote
 from admin_views import ProductView, Controller
 from database_service import DatabaseService
 import mail_service
@@ -213,17 +214,21 @@ def remove_all_from_cart():
 @app.route('/confirm', methods=['GET'])
 @login_required
 def confirm():
+    date = datetime.now()
     total_sum = 0
     cart_notes = storage.get_cart_notes_by_user_id(current_user.id)
     for note in cart_notes:
         product = storage.get_product_by_id(note.product_id)
         total_sum += product.price
         product.quantity -= 1
+        history_note = HistoryNote(user_id=current_user.id, product_id=product.id, date=date)
+        storage.save(history_note)
         storage.save(product)
         storage.delete(note)
 
     user = storage.get_user_by_id(current_user.id)
     user.balance -= total_sum
+    storage.save(user)
     return '', 200
 
 
@@ -267,5 +272,16 @@ def change_password():
         user.password = generate_password_hash(new_password)
         storage.save(user)
         return '', 200
-
     return '', 500
+
+
+@app.route('/history', methods=['GET'])
+def history_page():
+    history_notes = storage.get_all_history_notes_by_user_id(current_user.id)
+    d = [(note.date, note) for note in history_notes]
+    res = defaultdict(list)
+    for k, v in d:
+        res[k].append(v)
+    final = [{'date': k, 'items': v} for k, v in res.items()]
+    print(final)
+    return render_template('history.html', notes=final)

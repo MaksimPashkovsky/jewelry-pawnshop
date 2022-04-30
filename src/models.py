@@ -66,3 +66,19 @@ class CartNote(Base):
     def __init__(self, user_id, product_id):
         self.user_id = user_id
         self.product_id = product_id
+
+
+class HistoryNote(Base):
+    __tablename__ = 'history'
+
+    id = sa.Column(sa.Integer, primary_key=True)
+    user_id = sa.Column(sa.Integer, sa.ForeignKey("users.id"))
+    product_id = sa.Column(sa.Integer, sa.ForeignKey("products.id"))
+    date = sa.Column(sa.Date)
+    user = relationship("User")
+    product = relationship("Product")
+
+    def __init__(self, user_id, product_id, date):
+        self.user_id = user_id
+        self.product_id = product_id
+        self.date = date

@@ -1,0 +1,34 @@
+.history-row {
+    border-bottom: solid;
+    border-width: thin;
+}
+
+.history-row h3 {
+    margin-bottom: 0;
+    margin-left: 40px;
+}
+
+.history-row h4 {
+    margin-left: 40px;
+    margin-top: 0;
+}
+
+.history-items {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.history-item {
+    width: 270px;
+    height: 300px;
+    margin: 40px;
+    border: thin solid;
+}
+
+.history-item p {
+    margin: 0;
+}
+
+.history-item-image {
+    text-align: center;
+}

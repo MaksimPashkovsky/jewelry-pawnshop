@@ -1,5 +1,5 @@
 from db_setup import session
-from models import ProductType, User, Product, CartNote
+from models import ProductType, User, Product, CartNote, HistoryNote
 
 
 class DatabaseService:
@@ -65,3 +65,6 @@ class DatabaseService:
 
     def get_user_column(self, field: str):
         return [item[0] for item in self.session.query(getattr(User, field)).all()]
+
+    def get_all_history_notes_by_user_id(self, user_id):
+        return self.session.query(HistoryNote).filter_by(user_id=user_id).all()
