@@ -41,7 +41,7 @@ class Product(Base):
     type_object = relationship('ProductType')
 
     def __repr__(self):
-        return f'{self.name}'
+        return f'{self.name}, ${self.price}'
 
 
 class ProductType(Base):

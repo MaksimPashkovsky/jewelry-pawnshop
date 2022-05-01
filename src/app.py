@@ -106,7 +106,7 @@ def send_email():
     email = session['email']
     token = mail_service.generate_token(email)
     body = 'Your link is: ' + url_for('confirm_email', token=token, _external=True)
-    mail_service.send_email(email, body)
+    mail_service.send_email(email, 'Confirm email!', body)
     flash('Email sent', 'success')
     return redirect(url_for('login_page'))
 
@@ -218,18 +218,27 @@ def confirm():
     date = datetime.now()
     total_sum = 0
     cart_notes = storage.get_cart_notes_by_user_id(current_user.id)
+    products = ''
     for note in cart_notes:
         product = storage.get_product_by_id(note.product_id)
         total_sum += product.price
         product.quantity -= 1
-        history_note = HistoryNote(user_id=current_user.id, product_id=product.id, date=date)
-        storage.save(history_note)
+        products += str(product) + '\n'
+        storage.save(HistoryNote(user_id=current_user.id, product_id=product.id, date=date))
         storage.save(product)
         storage.delete(note)
+
+    cheque_body = 'UVELIRKA JEWELRY SHOP\n\n'
+    cheque_body += f'{date} you bought {len(cart_notes)} items, total amount: ${total_sum}\n'
+    cheque_body += f'Items:\n'
+    cheque_body += products + '\n\n'
+    cheque_body += url_for('main_page', _external=True) + '\n'
+    cheque_body += 'Thank you!'
 
     user = storage.get_user_by_id(current_user.id)
     user.balance -= total_sum
     storage.save(user)
+    mail_service.send_email(current_user.email, 'Your cheque', cheque_body)
     return '', 200
 
 
@@ -248,6 +257,7 @@ def profile_page():
 
 
 @app.route('/profile/save', methods=['POST'])
+@login_required
 def save_profile_info():
     data = request.get_json()
     field, value = tuple(data.items())[0]
@@ -262,6 +272,7 @@ def save_profile_info():
 
 
 @app.route('/profile/change-password', methods=['POST'])
+@login_required
 def change_password():
     data = request.get_json()
     old_password = data['old_password']

@@ -10,8 +10,8 @@ def generate_token(email):
     return url_safe_timed_serializer.dumps(email, salt='salt')
 
 
-def send_email(email, body):
-    msg = Message('Confirm email!', sender='jeweltry-shop@yahoo.com', recipients=[email])
+def send_email(email, header, body):
+    msg = Message(header, sender='jeweltry-shop@yahoo.com', recipients=[email])
     msg.body = body
     mail.send(msg)
 

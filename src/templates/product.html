@@ -29,9 +29,9 @@
             <p>Quantity: {{ product.quantity }}</p>
             <p>Number of purchases: {{ num_of_purchases }}</p>
             {% if current_user.is_authenticated %}
-                <button onclick="add_to_cart({{ product.id }}, '{{ url_for('add_to_cart') }}')">Add to cart</button>
+                <button {{ "disabled" if product.quantity == 0 }} onclick="add_to_cart({{ product.id }}, '{{ url_for('add_to_cart') }}')">Add to cart</button>
             {% else %}
-                <button onclick="toastr.error('Sign in your account first!')">Add to cart</button>
+                <button {{ "disabled" if product.quantity == 0 }} onclick="toastr.error('Sign in your account first!')">Add to cart</button>
             {% endif %}
         </div>
     </div>
