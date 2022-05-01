@@ -1,7 +1,7 @@
 import random
 from datetime import datetime
 from operator import attrgetter
-from collections import defaultdict
+from collections import defaultdict, Counter
 from flask import Flask, render_template, request, redirect, flash, url_for, session
 from flask_login import login_user, current_user, login_required, logout_user, LoginManager
 from flask_admin.contrib.sqla import ModelView
@@ -217,8 +217,16 @@ def remove_all_from_cart():
 def confirm():
     date = datetime.now()
     total_sum = 0
-    cart_notes = storage.get_cart_notes_by_user_id(current_user.id)
     products = ''
+    cart_notes = storage.get_cart_notes_by_user_id(current_user.id)
+
+    quantities = Counter([note.product_id for note in cart_notes])
+
+    for k, v in quantities.items():
+        product = storage.get_product_by_id(k)
+        if product.quantity < v:
+            return '', 500
+
     for note in cart_notes:
         product = storage.get_product_by_id(note.product_id)
         total_sum += product.price
