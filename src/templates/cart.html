@@ -9,26 +9,10 @@
 {% endblock %}
 
 {% block script %}
+    <script src="{{ url_for('static', filename='js/confirm.js') }}"></script>
     <script>
         toastr.options.positionClass = "toast-top-center";
         toastr.options.timeOut = 5000;
-
-        function confirm() {
-            bal = "{{ current_user.balance }}"
-            price = "{{ products|sum(attribute='price') }}"
-
-            if (Number(bal) < Number(price)) {
-                toastr.warning('Not enough money on account! <br><a href="{{ url_for('profile_page') }}">Top up</a>');
-                return;
-            }
-
-            fetch("{{ url_for('confirm') }}", {
-                method: "GET",
-            }).then(function (response) {
-                toastr.success('Thank you!');
-                setTimeout(() => { window.location.replace("{{ url_for('main_page') }}") }, 1000);
-            });
-        }
     </script>
 {% endblock %}
 
@@ -59,7 +43,7 @@
             <p>Products in cart: {{ products|length }}</p>
             <a class="text" style="text-decoration: underline" href="{{ url_for('remove_all_from_cart') }}">Remove all</a>
             <p>Total price: ${{ products|sum(attribute='price') }}</p>
-            <p style="text-align: center"><button {{ "hidden" if not products }} onclick="confirm()">Confirm</button></p>
+            <p style="text-align: center"><button {{ "hidden" if not products }} onclick="confirm_purchase({{ current_user.balance }}, {{ products|sum(attribute='price') }}, '{{ url_for('confirm') }}', '{{ url_for('main_page') }}')">Confirm</button></p>
         </div>
     </div>
 {% endblock %}
