@@ -277,6 +277,7 @@ def change_password():
 
 
 @app.route('/history', methods=['GET'])
+@login_required
 def history_page():
     history_notes = storage.get_all_history_notes_by_user_id(current_user.id)
     d = [(note.date, note) for note in history_notes]

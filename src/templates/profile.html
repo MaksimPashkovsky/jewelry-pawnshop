@@ -6,9 +6,13 @@
 
 {% block links %}
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/profile.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 {% endblock %}
 
 {% block script %}
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <script>
         toastr.options.positionClass = "toast-top-center";
         toastr.options.timeOut = 5000;
@@ -68,6 +72,68 @@
 
             });
         }
+        function save_balance2() {
+            toastr.options.positionClass = "toast-bottom-center";
+            toastr.options.timeOut = 3000;
+            const card_numbers = document.getElementsByClassName('card-number');
+
+            for (let i = 0; i < card_numbers.length; i++) {
+                card_numbers.item(i).style.borderColor = "black";
+                if (card_numbers.item(i).value.replace(/\d{4}/, "OK") !== "OK") {
+                    card_numbers.item(i).style.borderColor = "red";
+                    toastr.error('Invalid card number!')
+                    return false;
+                }
+            }
+
+            const cvv = document.getElementById('cvv');
+            cvv.style.borderColor = "black";
+            if (cvv.value.replace(/\d{3}/, "OK") !== "OK") {
+                cvv.style.borderColor = "red";
+                toastr.error('Invalid CVV!')
+                return false;
+            }
+
+            const exp_month = document.getElementById('exp-month')
+            const exp_year = document.getElementById('exp-year')
+
+            exp_month.style.borderColor = "black";
+            exp_year.style.borderColor = "black";
+
+            if (exp_month.value.replace(/\d{2}/, "OK") !== "OK" || Number(exp_month.value) > 12 || Number(exp_month.value) < 1) {
+                exp_month.style.borderColor = "red";
+                toastr.error('Invalid month!')
+                return false;
+            }
+            if (exp_year.value.replace(/\d{2}/, "OK") !== "OK" || Number(exp_year.value) < 22) {
+                exp_year.style.borderColor = "red";
+                toastr.error('Invalid year!')
+                return false;
+            }
+
+            const amount = document.getElementById('amount');
+            amount.style.borderColor = "black";
+            if (amount.value.replace(/\d+\.\d{1,2}/, "OK") !== "OK" && amount.value.replace(/\d+/, "OK") !== "OK") {
+                amount.style.borderColor = "red";
+                toastr.error('Invalid amount!')
+                return false;
+            }
+            balance = document.getElementById('balance')
+            balance_input = document.getElementById('amount')
+
+            fetch("{{ url_for('save_profile_info') }}", {
+                method: "POST",
+                body: JSON.stringify({balance: Number(balance_input.value) + Number(balance.value) }),
+                headers: { "Content-type": "application/json; charset=UTF-8", },
+            }).then(function (response) {
+                if (response.ok) {
+                    toastr.success('Successfully added!');
+                    balance.value = Number(balance_input.value) + Number(balance.value)
+                    setTimeout(() => { location.reload() }, 1000);
+                }
+
+            });
+        }
         function change_password() {
             old_password_input = document.getElementById("old-password")
             new_password_input = document.getElementById("new-password")
@@ -93,6 +159,9 @@
                     toastr.error('Error');
                 }
             });
+        }
+        function top_up() {
+            $("#exampleModal").modal("show")
         }
     </script>
 {% endblock %}
@@ -123,10 +192,50 @@
             <div class="profile-item">
                 <label>Balance</label>
                 <input value="{{ current_user.balance }}" readonly id="balance">
-                <button onclick="save_balance()">+</button>
-                <input type="number" id="balance-plus">
+                <button onclick="top_up()">Top up</button>
             </div>
         </div>
         <a class="text" style="text-decoration: underline" href="{{ url_for('history_page') }}">My purchase history</a>
+        <!-- Modal window -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Card credentials</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="card-creds-item">
+                            <label>Card number</label>
+                            <input class="card-number" maxlength="4">
+                            <input class="card-number" maxlength="4">
+                            <input class="card-number" maxlength="4">
+                            <input class="card-number" maxlength="4">
+                        </div>
+                        <div class="card-creds-item">
+                            <label>Name on card</label>
+                            <input>
+                        </div>
+                        <div class="card-creds-item">
+                            <label>CVV number</label>
+                            <input id="cvv" maxlength="3">
+                        </div>
+                        <div class="card-creds-item">
+                            <label>Expiry date</label>
+                            <input id="exp-month" maxlength="2">
+                            <input id="exp-year" maxlength="2">
+                        </div>
+                        <label>Amount</label>
+                        <input type="number" id="amount">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="save_balance2()">Top up</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 {% endblock %}

@@ -13,11 +13,15 @@
         function add_to_cart(id) {
             toastr.options.positionClass = "toast-bottom-right";
             toastr.options.timeOut = 1500;
-            fetch("{{ url_for('add_to_cart') }}", {
-                method: "POST",
-                body: JSON.stringify({ id: id, }),
-                headers: { "Content-type": "application/json; charset=UTF-8", },
-            }).then(toastr.success('Added to cart'));
+            {% if current_user.is_authenticated %}
+                fetch("{{ url_for('add_to_cart') }}", {
+                    method: "POST",
+                    body: JSON.stringify({ id: id, }),
+                    headers: { "Content-type": "application/json; charset=UTF-8", },
+                }).then(toastr.success('Added to cart'));
+            {% else %}
+                toastr.error('Sign in your account first!')
+            {% endif %}
         }
     </script>
 {% endblock %}
