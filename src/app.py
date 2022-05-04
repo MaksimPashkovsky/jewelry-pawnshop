@@ -2,6 +2,7 @@ import random
 from datetime import datetime
 from operator import attrgetter
 from collections import defaultdict, Counter
+from difflib import SequenceMatcher
 from flask import Flask, render_template, request, redirect, flash, url_for, session
 from flask_login import login_user, current_user, login_required, logout_user, LoginManager
 from flask_admin.contrib.sqla import ModelView
@@ -148,6 +149,11 @@ def catalog_page(product_type):
     if request.method == 'GET':
         return render_template('catalog.html', product_type=product_type,
                                products=sorted(all_products, key=attrgetter('name')))
+
+    search_string = request.form.get('search-string')
+
+    if search_string:
+        all_products = list(filter(lambda x: SequenceMatcher(None, search_string, x.name).ratio() >= 0.3, all_products))
 
     price_start = request.form.get('price-start')
     price_end = request.form.get('price-end')

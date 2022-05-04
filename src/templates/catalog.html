@@ -27,6 +27,10 @@
                     <a class="text" style="text-decoration: underline" href="{{ url_for('clear_filters', product_type=product_type) }}">Clear</a>
                 </div>
                 <div class="filter-item">
+                    <p><b>Search: </b></p>
+                    <input type="text" name="search-string" autocomplete="off">
+                </div>
+                <div class="filter-item">
                     <p><b>Price</b></p>
                     <label>From</label>
                     <input type="number" step="any" autocomplete="off" name="price-start" value="{{ session['price_start'] }}">

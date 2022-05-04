@@ -18,7 +18,7 @@
     font-size: 20px;
 }
 
-.filter-item input {
+.filter-item input[type='number'] {
     font-size: 20px;
     width: 100px;
     text-align: center;
