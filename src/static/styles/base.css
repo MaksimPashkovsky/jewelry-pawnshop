@@ -7,7 +7,7 @@ body {
     min-height: 100%;
     display: grid;
     grid-template-rows: auto 1fr auto;
-    background-color: #fffff0;
+    background-color: #fffff0 !important;
     font-family: 'century gothic', monospace;
 }
 
