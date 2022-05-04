@@ -31,7 +31,7 @@
             <div class="profile-item">
                 <label>Login</label>
                 <input type="text" value="{{ current_user.login }}" id="login">
-                <button onclick="save_login('{{ url_for('save_profile_info') }}', '{{ current_user.login }}')">Save</button>
+                <button onclick="save_login('{{ url_for('profile.save_profile_info') }}', '{{ current_user.login }}')">Save</button>
             </div>
             <div class="profile-item">
                 <label>Old password</label>
@@ -40,12 +40,12 @@
             <div class="profile-item">
                 <label>New password</label>
                 <input type="password" id="new-password">
-                <button onclick="change_password('{{ url_for('change_password') }}')">Change password</button>
+                <button onclick="change_password('{{ url_for('profile.change_password') }}')">Change password</button>
             </div>
             <div class="profile-item">
                 <label>Email</label>
                 <input type="email" value="{{ current_user.email }}" id="email">
-                <button onclick="save_email('{{ url_for('save_profile_info') }}', '{{ current_user.email }}')">Save</button>
+                <button onclick="save_email('{{ url_for('profile.save_profile_info') }}', '{{ current_user.email }}')">Save</button>
             </div>
             <div class="profile-item">
                 <label>Balance</label>
@@ -53,7 +53,7 @@
                 <button onclick="top_up()">Top up</button>
             </div>
         </div>
-        <h4><a class="text" style="text-decoration: underline" href="{{ url_for('history_page') }}">My purchase history</a></h4>
+        <h4><a class="text" style="text-decoration: underline" href="{{ url_for('profile.history_page') }}">My purchase history</a></h4>
 
         <!-- Modal window -->
         <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -91,7 +91,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" onclick="save_balance('{{ url_for('save_profile_info') }}')">Top up</button>
+                        <button type="button" class="btn btn-primary" onclick="save_balance('{{ url_for('profile.save_profile_info') }}')">Top up</button>
                     </div>
                 </div>
             </div>

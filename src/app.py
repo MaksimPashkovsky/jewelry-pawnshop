@@ -1,7 +1,7 @@
 import random
 from datetime import datetime
 from operator import attrgetter
-from collections import defaultdict, Counter
+from collections import Counter
 from difflib import SequenceMatcher
 from flask import Flask, render_template, request, redirect, flash, url_for, session
 from flask_login import login_user, current_user, login_required, logout_user, LoginManager
@@ -15,6 +15,7 @@ from models import ProductType, User, Product, CartNote, HistoryNote
 from admin_views import ProductView, Controller
 from database_service import DatabaseService
 import mail_service
+from profile.profile import profile
 
 storage = DatabaseService()
 
@@ -32,6 +33,8 @@ admin.add_view(Controller(User, storage.session))
 admin.add_view(ProductView(Product, storage.session))
 admin.add_view(ModelView(CartNote, storage.session))
 admin.add_view(ModelView(ProductType, storage.session))
+
+app.register_blueprint(profile, url_prefix='/profile')
 
 
 @login_manager.user_loader
@@ -262,53 +265,3 @@ def cart_page():
     cart_notes = storage.get_cart_notes_by_user_id(current_user.id)
     products = [note.product for note in cart_notes]
     return render_template('cart.html', products=products)
-
-
-@app.route('/profile', methods=['GET'])
-@login_required
-def profile_page():
-    return render_template('profile.html')
-
-
-@app.route('/profile/save', methods=['POST'])
-@login_required
-def save_profile_info():
-    data = request.get_json()
-    field, value = tuple(data.items())[0]
-
-    if field != 'balance' and value in storage.get_user_column(field):
-        return '', 500
-
-    user = storage.get_user_by_id(current_user.id)
-    setattr(user, field, value)
-    storage.save(user)
-    return '', 200
-
-
-@app.route('/profile/change-password', methods=['POST'])
-@login_required
-def change_password():
-    data = request.get_json()
-    old_password = data['old_password']
-    new_password = data['new_password']
-
-    user = storage.get_user_by_id(current_user.id)
-
-    if check_password_hash(user.password, old_password):
-        user.password = generate_password_hash(new_password)
-        storage.save(user)
-        return '', 200
-    return '', 500
-
-
-@app.route('/history', methods=['GET'])
-@login_required
-def history_page():
-    history_notes = storage.get_all_history_notes_by_user_id(current_user.id)
-    d = [(note.date, note) for note in history_notes]
-    res = defaultdict(list)
-    for k, v in d:
-        res[k].append(v)
-    final = [{'date': k, 'items': v} for k, v in res.items()]
-    final.sort(key=lambda x: x['date'], reverse=True)
-    return render_template('history.html', notes=final)
