@@ -5,11 +5,11 @@
 {% endblock %}
 
 {% block links %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/catalog.css') }}">
+    <link rel="stylesheet" href="{{ url_for('catalog.static', filename='styles/catalog.css') }}">
 {% endblock %}
 
 {% block script %}
-    <script src="{{ url_for('static', filename='js/add_to_cart.js') }}"></script>
+    <script src="{{ url_for('catalog.static', filename='js/add_to_cart.js') }}"></script>
     <script>
         toastr.options.positionClass = "toast-bottom-right";
         toastr.options.timeOut = 1500;
@@ -65,7 +65,7 @@
                         </div>
                         <div style="text-align: right">
                             {% if current_user.is_authenticated %}
-                                <button {{ "disabled" if product.quantity == 0 }} onclick="add_to_cart({{ product.id }}, '{{ url_for('add_to_cart') }}')">Add to cart</button>
+                                <button {{ "disabled" if product.quantity == 0 }} onclick="add_to_cart({{ product.id }}, '{{ url_for('cart.add_to_cart') }}')">Add to cart</button>
                             {% else %}
                                 <button {{ "disabled" if product.quantity == 0 }} onclick="toastr.error('Sign in your account first!')">Add to cart</button>
                             {% endif %}

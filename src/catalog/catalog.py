@@ -51,7 +51,7 @@ def catalog_page(product_type):
 def product_page(id):
     product = storage.get_product_by_id(id)
     num_of_purchases = len(storage.get_all_history_notes_by_product_id(id))
-    return render_template('product.html', product=product, num_of_purchases=num_of_purchases)
+    return render_template('catalog/product.html', product=product, num_of_purchases=num_of_purchases)
 
 
 @catalog.route('/clear-filters/<product_type>')
