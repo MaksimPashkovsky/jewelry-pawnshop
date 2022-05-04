@@ -16,6 +16,7 @@ from admin_views import ProductView, Controller
 from database_service import DatabaseService
 import mail_service
 from profile.profile import profile
+from email_.email import email
 
 storage = DatabaseService()
 
@@ -35,6 +36,7 @@ admin.add_view(ModelView(CartNote, storage.session))
 admin.add_view(ModelView(ProductType, storage.session))
 
 app.register_blueprint(profile, url_prefix='/profile')
+app.register_blueprint(email, url_prefix='/email')
 
 
 @login_manager.user_loader
@@ -102,28 +104,7 @@ def register_page():
                     email=email, reg_date=datetime.now(), is_verified=False, is_admin=False)
 
     storage.save(new_user)
-    return redirect(url_for('send_email'))
-
-
-@app.route('/send_email')
-def send_email():
-    email = session['email']
-    token = mail_service.generate_token(email)
-    body = 'Your link is: ' + url_for('confirm_email', token=token, _external=True)
-    mail_service.send_email(email, 'Confirm email!', body)
-    flash('Email sent', 'success')
-    return redirect(url_for('login_page'))
-
-
-@app.route('/confirm_email/<token>')
-def confirm_email(token):
-    email = mail_service.retrieve_email(token)
-    if not email:
-        return render_template('email_confirm.html', success=False)
-    user = storage.get_user_by_email(email)
-    user.is_verified = True
-    storage.save(user)
-    return render_template('email_confirm.html', success=True)
+    return redirect(url_for('email.send_email'))
 
 
 @app.route('/logout', methods=['GET'])
