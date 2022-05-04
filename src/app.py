@@ -1,8 +1,6 @@
 import random
 from datetime import datetime
-from operator import attrgetter
 from collections import Counter
-from difflib import SequenceMatcher
 from flask import Flask, render_template, request, redirect, flash, url_for, session
 from flask_login import login_user, current_user, login_required, logout_user, LoginManager
 from flask_admin.contrib.sqla import ModelView
@@ -17,6 +15,7 @@ from database_service import DatabaseService
 import mail_service
 from profile.profile import profile
 from email_.email import email
+from catalog.catalog import catalog
 
 storage = DatabaseService()
 
@@ -37,6 +36,7 @@ admin.add_view(ModelView(ProductType, storage.session))
 
 app.register_blueprint(profile, url_prefix='/profile')
 app.register_blueprint(email, url_prefix='/email')
+app.register_blueprint(catalog, url_prefix='/catalog')
 
 
 @login_manager.user_loader
@@ -120,60 +120,6 @@ def redirect_to_sign_in(response):
     if response.status_code == 401:
         return redirect(url_for('login_page') + '?next=' + request.url)
     return response
-
-
-@app.route('/catalog/<product_type>', methods=['GET', 'POST'])
-def catalog_page(product_type):
-
-    product_type_object = storage.get_product_type_by_name(product_type.capitalize())
-
-    # All products of concrete type
-    all_products = storage.get_products_by_type(product_type_object.id)
-
-    if request.method == 'GET':
-        return render_template('catalog.html', product_type=product_type,
-                               products=sorted(all_products, key=attrgetter('name')))
-
-    search_string = request.form.get('search-string')
-
-    if search_string:
-        all_products = list(filter(lambda x: SequenceMatcher(None, search_string, x.name).ratio() >= 0.3, all_products))
-
-    price_start = request.form.get('price-start')
-    price_end = request.form.get('price-end')
-
-    if price_start == '' and all_products:
-        price_start = min(all_products, key=attrgetter('price')).price
-
-    if price_end == '' and all_products:
-        price_end = max(all_products, key=attrgetter('price')).price
-
-    filtered_products = list(filter(lambda x: float(price_start) <= x.price <= float(price_end), all_products))
-
-    session['price_start'] = price_start
-    session['price_end'] = price_end
-
-    sorting_option = request.form.get('sorting')
-
-    field, order = sorting_option.split('-')
-    sorted_products = sorted(filtered_products, key=attrgetter(field), reverse=order == 'desc')
-
-    return render_template('catalog.html', product_type=product_type, products=sorted_products,
-                           sorting_option=sorting_option)
-
-
-@app.route('/catalog/product/<id>')
-def product_page(id):
-    product = storage.get_product_by_id(id)
-    num_of_purchases = len(storage.get_all_history_notes_by_product_id(id))
-    return render_template('product.html', product=product, num_of_purchases=num_of_purchases)
-
-
-@app.route('/clear-filters/<product_type>')
-def clear_filters(product_type):
-    session['price_start'] = ''
-    session['price_end'] = ''
-    return redirect(url_for('catalog_page', product_type=product_type))
 
 
 @app.route('/add-to-cart', methods=['POST'])

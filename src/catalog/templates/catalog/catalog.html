@@ -21,10 +21,10 @@
 {% block main %}
     <div class="catalog">
         <div class="catalog-filter">
-            <form method="post" action="{{ url_for('catalog_page', product_type=product_type) }}">
+            <form method="post" action="{{ url_for('catalog.catalog_page', product_type=product_type) }}">
                 <div class="filter-head">
                     <b>F I L T E R S</b> |
-                    <a class="text" style="text-decoration: underline" href="{{ url_for('clear_filters', product_type=product_type) }}">Clear</a>
+                    <a class="text" style="text-decoration: underline" href="{{ url_for('catalog.clear_filters', product_type=product_type) }}">Clear</a>
                 </div>
                 <div class="filter-item">
                     <p><b>Search: </b></p>
@@ -54,7 +54,7 @@
                 {% for product in products %}
                     <article class="catalog-item">
                         <div class="catalog-item-image">
-                            <a href={{ url_for('product_page', id=product.id) }}>
+                            <a href={{ url_for('catalog.product_page', id=product.id) }}>
                                 <img src="{{ url_for('static', filename='images/' + product.image) if product.image else url_for('static', filename='images/no-image.png') }}" alt="#" height="200" width="230">
                             </a>
                         </div>
