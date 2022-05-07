@@ -21,8 +21,8 @@
 .history-item {
     width: 270px;
     height: 270px;
-    margin: 40px;
-    border: thin solid;
+    margin: 20px;
+    background-color: #ffffff;
 }
 
 .history-item p {

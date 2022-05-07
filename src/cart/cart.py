@@ -4,7 +4,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
 from database_service import DatabaseService
 from models import CartNote, HistoryNote
-import mail_service
+from email_ import mail_service
 
 cart = Blueprint('cart', __name__, template_folder='templates', static_folder='static')
 storage = DatabaseService()

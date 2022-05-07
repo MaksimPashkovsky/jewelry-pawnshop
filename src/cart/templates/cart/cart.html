@@ -27,7 +27,7 @@
                         </div>
                         <div class="cart-item-info">
                             <p style="text-align: center"><b>{{ product.name }}</b></p>
-                            <p>Price: {{ product.price }}</p>
+                            <p>Price: ${{ product.price }}</p>
                         </div>
                         <p style="text-align: right">
                         <a href="{{ url_for('cart.remove_from_cart', id=product.id) }}">

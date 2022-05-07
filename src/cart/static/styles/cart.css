@@ -11,8 +11,8 @@
 .cart-item {
     width: 270px;
     height: 300px;
-    border: thin solid;
     margin: 40px;
+    background-color: #ffffff;
 }
 
 .cart-item p {

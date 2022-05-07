@@ -10,9 +10,8 @@ from decouple import config
 from models import ProductType, User, Product, CartNote, HistoryNote
 from admin_views import *
 from database_service import DatabaseService
-import mail_service
+from email_ import mail_service, email
 from profile.profile import profile
-from email_.email import email
 from catalog.catalog import catalog
 from cart.cart import cart
 
@@ -36,7 +35,7 @@ admin.add_view(ProductTypeView(ProductType, storage.session))
 admin.add_view(HistoryNoteView(HistoryNote, storage.session))
 
 app.register_blueprint(profile, url_prefix='/profile')
-app.register_blueprint(email, url_prefix='/email')
+app.register_blueprint(email.email, url_prefix='/email')
 app.register_blueprint(catalog, url_prefix='/catalog')
 app.register_blueprint(cart, url_prefix='/cart')
 

@@ -15,7 +15,7 @@
     width: 270px;
     height: 300px;
     margin: 40px;
-    border: thin solid;
+    background-color: #ffffff;
 }
 
 .best-offers-item-info p {

@@ -39,8 +39,8 @@
 .catalog-item {
     width: 270px;
     height: 300px;
-    margin: 40px;
-    border: thin solid;
+    margin: 20px;
+    background-color: #ffffff;
 }
 
 .catalog-item p {

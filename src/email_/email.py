@@ -1,5 +1,5 @@
 from flask import Blueprint, session, url_for, flash, redirect, render_template
-import mail_service
+from email_ import mail_service
 from database_service import DatabaseService
 
 email = Blueprint('email', __name__, template_folder='templates', static_folder='static')
@@ -12,7 +12,7 @@ def send_email():
     token = mail_service.generate_token(email)
     body = 'Your link is: ' + url_for('.confirm_email', token=token, _external=True)
     mail_service.send_email(email, 'Confirm email!', body)
-    flash('Email sent', 'success')
+    flash('Email sent! The link will be valid for 1 hour', 'success')
     return redirect(url_for('login_page'))
 
 

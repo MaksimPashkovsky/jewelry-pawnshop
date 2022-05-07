@@ -40,8 +40,11 @@ def catalog_page(product_type):
 
     sorting_option = request.form.get('sorting')
 
-    field, order = sorting_option.split('-')
-    sorted_products = sorted(filtered_products, key=attrgetter(field), reverse=order == 'desc')
+    if sorting_option == 'num-of-purchased':
+        sorted_products = sorted(filtered_products, key=lambda x: len(storage.get_all_history_notes_by_product_id(x.id)), reverse=True)
+    else:
+        field, order = sorting_option.split('-')
+        sorted_products = sorted(filtered_products, key=attrgetter(field), reverse=order == 'desc')
 
     return render_template('catalog/catalog.html', product_type=product_type, products=sorted_products,
                            sorting_option=sorting_option)
