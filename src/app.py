@@ -4,13 +4,12 @@ from flask import Flask, render_template, request, redirect, flash, url_for, ses
 from flask_login import login_user, login_required, logout_user, LoginManager
 from flask_toastr import Toastr
 from flask_admin import Admin
-from flask_mail import Mail
 from werkzeug.security import check_password_hash, generate_password_hash
 from decouple import config
 from models import ProductType, User, Product, CartNote, HistoryNote
 from admin_views import *
 from database_service import DatabaseService
-from email_ import mail_service, email
+from email_ import mail_service, email, Mail
 from profile.profile import profile
 from catalog.catalog import catalog
 from cart.cart import cart
