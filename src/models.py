@@ -3,6 +3,8 @@ from sqlalchemy.orm import relationship
 from flask_login import UserMixin
 from db_setup import Base
 
+__all__ = ['User', 'Product', 'ProductType', 'CartNote', 'HistoryNote']
+
 
 class User(Base, UserMixin):
     __tablename__ = 'users'

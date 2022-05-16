@@ -5,8 +5,8 @@ from flask_login import login_user, login_required, logout_user, LoginManager
 from flask_toastr import Toastr
 from flask_admin import Admin
 from werkzeug.security import check_password_hash, generate_password_hash
-from models import ProductType, User, Product, CartNote, HistoryNote
-from admin_views import *
+import admin_views
+from models import User
 from database_service import DatabaseService
 from email_ import mail_service, email, Mail
 from profile.profile import profile
@@ -26,12 +26,7 @@ login_manager = LoginManager(app)
 toastr = Toastr(app)
 mail_service.mail = Mail(app)
 
-admin = Admin(app)
-admin.add_view(Controller(User, storage.session))
-admin.add_view(ProductView(Product, storage.session))
-admin.add_view(CartNoteView(CartNote, storage.session))
-admin.add_view(ProductTypeView(ProductType, storage.session))
-admin.add_view(HistoryNoteView(HistoryNote, storage.session))
+admin_views.add_all_views(Admin(app))
 
 app.register_blueprint(profile, url_prefix='/profile')
 app.register_blueprint(email.email, url_prefix='/email')
