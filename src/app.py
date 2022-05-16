@@ -5,7 +5,6 @@ from flask_login import login_user, login_required, logout_user, LoginManager
 from flask_toastr import Toastr
 from flask_admin import Admin
 from werkzeug.security import check_password_hash, generate_password_hash
-from decouple import config
 from models import ProductType, User, Product, CartNote, HistoryNote
 from admin_views import *
 from database_service import DatabaseService
@@ -13,13 +12,14 @@ from email_ import mail_service, email, Mail
 from profile.profile import profile
 from catalog.catalog import catalog
 from cart.cart import cart
+from config import AppConfig, MailConfig, ToastrConfig
 
 storage = DatabaseService()
 
 app = Flask(__name__, static_folder='static')
-app.secret_key = config('APP_SECRET_KEY')
-app.config.from_pyfile('mail_config.cfg')
-app.config.from_pyfile('toastr_config.cfg')
+app.secret_key = AppConfig.SECRET_KEY
+app.config.from_object(MailConfig)
+app.config.from_object(ToastrConfig)
 app.jinja_env.globals['PRODUCT_TYPES'] = storage.get_all_product_types()
 
 login_manager = LoginManager(app)

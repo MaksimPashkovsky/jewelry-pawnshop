@@ -1,8 +1,8 @@
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from flask_mail import Message
-from decouple import config
+from config import UrlSafeTimeSerializerConfig
 
-url_safe_timed_serializer = URLSafeTimedSerializer(config('URL_SAFE_TIMED_SERIALIZER_SECRET_KEY'))
+url_safe_timed_serializer = URLSafeTimedSerializer(UrlSafeTimeSerializerConfig.URL_SAFE_TIMED_SERIALIZER_SECRET_KEY)
 mail = None
 
 
