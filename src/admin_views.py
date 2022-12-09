@@ -6,17 +6,26 @@ from database_service import DatabaseService
 
 storage = DatabaseService()
 
-'''
+
 def add_all_views(admin):
     admin.add_view(Controller(User, storage.session))
-    admin.add_view(ProductView(Product, storage.session))
+    admin.add_view(ArticleView(Article, storage.session))
     admin.add_view(CartNoteView(CartNote, storage.session))
-    admin.add_view(ProductTypeView(ProductType, storage.session))
-    admin.add_view(HistoryNoteView(HistoryNote, storage.session))'''
+    admin.add_view(ArticleTypeView(ArticleType, storage.session))
+    admin.add_view(HistoryNoteView(HistoryNote, storage.session))
+    admin.add_view(AccountView(Account, storage.session))
+    admin.add_view(AppraiserView(Appraiser, storage.session))
+    admin.add_view(AuctionView(Auction, storage.session))
+    admin.add_view(ConditionView(Condition, storage.session))
+    admin.add_view(CustomerView(Customer, storage.session))
+    admin.add_view(PassportInfoView(PassportInfo, storage.session))
+    admin.add_view(SoldLotView(SoldLot, storage.session))
 
 
-class ProductView(ModelView):
-    column_list = ['name', 'type_object', 'price', 'quantity', 'image']
+
+class ArticleView(ModelView):
+    column_list = ['name', 'type', 'condition', 'weight', 'quantity',
+                   'estimated_price', 'receipt_date', 'appraiser', 'customer', 'image']
 
 
 class Controller(ModelView):
@@ -33,9 +42,38 @@ class CartNoteView(ModelView):
     pass
 
 
-class ProductTypeView(ModelView):
+class ArticleTypeView(ModelView):
     pass
 
 
 class HistoryNoteView(ModelView):
     pass
+
+
+class AccountView(ModelView):
+    pass
+
+
+class AppraiserView(ModelView):
+    pass
+
+
+class AuctionView(ModelView):
+    pass
+
+
+class ConditionView(ModelView):
+    pass
+
+
+class CustomerView(ModelView):
+    pass
+
+
+class PassportInfoView(ModelView):
+    pass
+
+
+class SoldLotView(ModelView):
+    pass
+

@@ -42,13 +42,17 @@ class Article(Base):
 
     article_id = sa.Column(sa.Integer, primary_key=True)
     name = sa.Column(sa.String)
-    condition = sa.Column(sa.Integer, sa.ForeignKey('Condition.condition_id'))
+    condition_id = sa.Column(sa.Integer, sa.ForeignKey('Condition.condition_id'))
+    condition = relationship("Condition")
     weight = sa.Column(sa.Numeric)
     estimated_price = sa.Column(sa.Numeric)
     receipt_date = sa.Column(sa.Date)
-    appraiser_id = sa.Column(sa.Integer, sa.ForeignKey('Appraiser.appraiser_id'))
-    customer_id = sa.Column(sa.Integer, sa.ForeignKey('Customer.customer_id'))
-    type = sa.Column(sa.Integer, sa.ForeignKey("ArticleType.type_id"))
+    appraiser_id = sa.Column(sa.Integer, sa.ForeignKey('Appraiser.person_id'))
+    appraiser = relationship("Appraiser")
+    customer_id = sa.Column(sa.Integer, sa.ForeignKey('Customer.person_id'))
+    customer = relationship("Customer")
+    type_id = sa.Column(sa.Integer, sa.ForeignKey("ArticleType.type_id"))
+    type = relationship("ArticleType")
     quantity = sa.Column(sa.Integer)
     image = sa.Column(sa.String)
 
@@ -116,7 +120,7 @@ class SoldLot(Base):
     final_sum = sa.Column(sa.Float)
 
 
-class User(Base):
+class User(Base, UserMixin):
     __tablename__ = 'User'
 
     user_id = sa.Column(sa.Integer, primary_key=True)
