@@ -3,84 +3,143 @@ from sqlalchemy.orm import relationship
 from flask_login import UserMixin
 from db_setup import Base
 
-__all__ = ['User', 'Product', 'ProductType', 'CartNote', 'HistoryNote']
+__all__ = ['Account', 'Appraiser', 'Article', 'ArticleType',
+           'Auction', 'Condition', 'Customer', 'PassportInfo',
+           'SoldLot', 'User', 'CartNote', 'HistoryNote']
 
 
-class User(Base, UserMixin):
-    __tablename__ = 'users'
+class Account(Base):
+    __tablename__ = 'Account'
 
-    id = sa.Column(sa.Integer, primary_key=True)
-    login = sa.Column('login', sa.String, unique=True)
-    password = sa.Column('password', sa.String)
-    email = sa.Column('email', sa.String, unique=True)
-    is_verified = sa.Column('is_verified', sa.Boolean)
-    registration_date = sa.Column('registration date', sa.Date)
-    is_admin = sa.Column('is_admin', sa.Boolean, default=False)
-    balance = sa.Column('balance', sa.Numeric, default=0)
-
-    def __init__(self, login, password, email, reg_date, is_verified=False, is_admin=False, balance=0):
-        self.login = login
-        self.password = password
-        self.email = email
-        self.registration_date = reg_date
-        self.is_verified = is_verified
-        self.is_admin = is_admin
-        self.balance = balance
-
-    def __repr__(self):
-        return f'{self.login}'
+    account_id = sa.Column(sa.Integer, primary_key=True)
+    bank = sa.Column(sa.String)
+    account_number = sa.Column(sa.String)
+    user_id = sa.Column(sa.Integer, sa.ForeignKey("User.user_id"))
+    balance = sa.Column(sa.Float)
 
 
-class Product(Base):
-    __tablename__ = 'products'
-
-    id = sa.Column(sa.Integer, primary_key=True)
-    name = sa.Column('name', sa.String)
-    type = sa.Column('type', sa.Integer, sa.ForeignKey("product_types.id"))
-    price = sa.Column('price', sa.Numeric)
-    quantity = sa.Column('quantity', sa.Integer)
-    image = sa.Column('image', sa.String)
-    type_object = relationship('ProductType')
-
-    def __repr__(self):
-        return f'{self.name}, ${self.price}'
+class Person:
+    person_id = sa.Column(sa.Integer, primary_key=True)
+    name = sa.Column(sa.String)
+    surname = sa.Column(sa.String)
+    patronymic = sa.Column(sa.String)
+    phone_number = sa.Column(sa.String)
+    date_of_birth = sa.Column(sa.Date)
+    sex = sa.Column(sa.Boolean)
 
 
-class ProductType(Base):
-    __tablename__ = 'product_types'
+class Appraiser(Person, Base):
+    __tablename__ = 'Appraiser'
 
-    id = sa.Column(sa.Integer, primary_key=True)
-    name = sa.Column('name', sa.String)
+    position = sa.Column(sa.String)
+    salary = sa.Column(sa.Numeric)
+    employment_date = sa.Column(sa.Date)
+    user_id = sa.Column(sa.Integer, sa.ForeignKey("User.user_id"))
 
-    def __repr__(self):
-        return f'{self.name}'
+
+class Article(Base):
+    __tablename__ = 'Article'
+
+    article_id = sa.Column(sa.Integer, primary_key=True)
+    name = sa.Column(sa.String)
+    condition = sa.Column(sa.Integer, sa.ForeignKey('Condition.condition_id'))
+    weight = sa.Column(sa.Numeric)
+    estimated_price = sa.Column(sa.Numeric)
+    receipt_date = sa.Column(sa.Date)
+    appraiser_id = sa.Column(sa.Integer, sa.ForeignKey('Appraiser.appraiser_id'))
+    customer_id = sa.Column(sa.Integer, sa.ForeignKey('Customer.customer_id'))
+    type = sa.Column(sa.Integer, sa.ForeignKey("ArticleType.type_id"))
+    quantity = sa.Column(sa.Integer)
+    image = sa.Column(sa.String)
+
+
+class ArticleType(Base):
+    __tablename__ = 'ArticleType'
+
+    type_id = sa.Column(sa.Integer, primary_key=True)
+    name = sa.Column(sa.String)
+
+
+class Auction(Base):
+    __tablename__ = 'Auction'
+
+    auction_id = sa.Column(sa.Integer, primary_key=True)
+    date = sa.Column(sa.Date)
+    name = sa.Column(sa.String)
+
+
+class Condition(Base):
+    __tablename__ = 'Condition'
+
+    condition_id = sa.Column(sa.Integer, primary_key=True)
+    name = sa.Column(sa.String)
+
+
+class Customer(Person, Base):
+    __tablename__ = 'Customer'
+
+    discount = sa.Column(sa.Numeric)
+    passport_id = sa.Column(sa.Integer, sa.ForeignKey('PassportInfo.passport_id'))
+    passport_object = relationship('PassportInfo')
+    user_id = sa.Column(sa.Integer, sa.ForeignKey("User.user_id"))
+
+
+class PassportInfo(Base):
+    __tablename__ = 'PassportInfo'
+
+    passport_id = sa.Column(sa.Integer, primary_key=True)
+    type = sa.Column(sa.Integer)
+    code_of_issuing_state = sa.Column(sa.String)
+    passport_number = sa.Column(sa.String)
+    surname = sa.Column(sa.String)
+    name = sa.Column(sa.String)
+    nationality = sa.Column(sa.String)
+    date_of_birth = sa.Column(sa.Date)
+    identification_number = sa.Column(sa.String)
+    sex = sa.Column(sa.Boolean)
+    place_of_birth = sa.Column(sa.String)
+    date_of_issue = sa.Column(sa.Date)
+    date_of_expiry = sa.Column(sa.Date)
+    authority = sa.Column(sa.String)
+
+
+class SoldLot(Base):
+    __tablename__ = 'SoldLot'
+
+    lot_id = sa.Column(sa.Integer, primary_key=True)
+    article_id = sa.Column(sa.Integer, sa.ForeignKey("Article.article_id"))
+    auction_id = sa.Column(sa.Integer, sa.ForeignKey("Auction.auction_id"))
+    user_id = sa.Column(sa.Integer, sa.ForeignKey("User.user_id"))
+    status = sa.Column(sa.String)
+    timestamp = sa.Column(sa.TIMESTAMP)
+    start_sum = sa.Column(sa.Float)
+    final_sum = sa.Column(sa.Float)
+
+
+class User(Base):
+    __tablename__ = 'User'
+
+    user_id = sa.Column(sa.Integer, primary_key=True)
+    login = sa.Column(sa.String, unique=True)
+    password = sa.Column(sa.String)
+    email = sa.Column(sa.String, unique=True)
+    registration_date = sa.Column(sa.Date)
+    is_verified = sa.Column(sa.Boolean)
+    account_id = sa.Column(sa.Integer, sa.ForeignKey("Account.account_id"))
 
 
 class CartNote(Base):
-    __tablename__ = 'carts'
+    __tablename__ = 'Cart'
 
-    id = sa.Column(sa.Integer, primary_key=True)
-    user_id = sa.Column(sa.Integer, sa.ForeignKey("users.id"))
-    product_id = sa.Column(sa.Integer, sa.ForeignKey("products.id"))
-    user = relationship("User")
-    product = relationship("Product")
-
-    def __init__(self, user_id, product_id):
-        self.user_id = user_id
-        self.product_id = product_id
+    cart_id = sa.Column(sa.Integer, primary_key=True)
+    user_id = sa.Column(sa.Integer, sa.ForeignKey("User.user_id"))
+    article_id = sa.Column(sa.Integer, sa.ForeignKey("Article.article_id"))
 
 
 class HistoryNote(Base):
-    __tablename__ = 'history'
+    __tablename__ = 'History'
 
-    id = sa.Column(sa.Integer, primary_key=True)
-    user_id = sa.Column(sa.Integer, sa.ForeignKey("users.id"))
-    product_id = sa.Column(sa.Integer, sa.ForeignKey("products.id"))
+    history_id = sa.Column(sa.Integer, primary_key=True)
+    user_id = sa.Column(sa.Integer, sa.ForeignKey("User.user_id"))
+    article_id = sa.Column(sa.Integer, sa.ForeignKey("Article.article_id"))
     date = sa.Column(sa.Date)
-    user = relationship("User")
-    product = relationship("Product")
-
-    def __init__(self, user_id, product_id, date):
-        self.user_id = user_id
-        self.product_id = product_id
-        self.date = date

@@ -17,13 +17,13 @@ storage = DatabaseService()
 app.secret_key = AppConfig.SECRET_KEY
 app.config.from_object(MailConfig)
 app.config.from_object(ToastrConfig)
-app.jinja_env.globals['PRODUCT_TYPES'] = storage.get_all_product_types()
+app.jinja_env.globals['PRODUCT_TYPES'] = storage.get_all_article_types()
 
 login_manager = LoginManager(app)
 toastr = Toastr(app)
 mail_service.mail = Mail(app)
 
-admin_views.add_all_views(Admin(app))
+# admin_views.add_all_views(Admin(app))
 
 app.register_blueprint(profile, url_prefix='/profile')
 app.register_blueprint(email.email, url_prefix='/email')

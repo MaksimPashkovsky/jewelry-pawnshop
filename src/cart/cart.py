@@ -69,7 +69,7 @@ def confirm():
         storage.save(product)
         storage.delete(note)
 
-    cheque_body = 'UVELIRKA JEWELRY SHOP\n\n'
+    cheque_body = 'UVELIRKA JEWELRY PAWNSHOP\n\n'
     cheque_body += f'{date} you bought {len(cart_notes)} items, total amount: ${total_sum}\n'
     cheque_body += f'Items:\n'
     cheque_body += products + '\n\n'

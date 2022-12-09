@@ -10,7 +10,7 @@ DATABASE = {
     'port': os.getenv('DB_PORT', default='5432'),
     'username': os.getenv('DB_USERNAME', default='postgres'),
     'password': os.getenv('DB_PASSWORD', default='password'),
-    'database': os.getenv('DB_NAME', default='jewelry-shop-db')
+    'database': os.getenv('DB_NAME', default='pawnshop-db')
 }
 
 engine = create_engine(URL(**DATABASE))

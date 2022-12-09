@@ -1,5 +1,5 @@
 from db_setup import session
-from models import ProductType, User, Product, CartNote, HistoryNote
+from models import *
 
 
 class DatabaseService:
@@ -15,9 +15,10 @@ class DatabaseService:
     def __init__(self):
         self.session = session
 
-    def get_all_product_types(self):
-        return self.session.query(ProductType).all()
+    def get_all_article_types(self):
+        return self.session.query(ArticleType).all()
 
+    '''
     def get_product_type_by_name(self, name):
         return self.session.query(ProductType).filter_by(name=name).first()
 
@@ -71,3 +72,4 @@ class DatabaseService:
 
     def get_all_history_notes_by_product_id(self, product_id):
         return self.session.query(HistoryNote).filter_by(product_id=product_id).all()
+    '''
