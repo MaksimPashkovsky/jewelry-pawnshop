@@ -15,9 +15,9 @@
             <div class="best-offers-container">
                 {% for article in random_articles %}
                     <div class="best-offers-item">
-                        <a href={{ url_for('catalog.product_page', id=article.article_id) }}>
+                        <a href={{ url_for('catalog.article_page', id=article.article_id) }}>
                             <div class="best-offers-item-image">
-                                <img src="{{ article.image if article.image else "https://drive.google.com/uc?export=view&id=1qNdVqYxBfeczF0tAMVaLD2YEM1z1SKNK" }}" alt="#" height="200" width="230">
+                                <img src="{{ article.image if article.image else "https://www.dropbox.com/s/aoiyw8t7jvy206a/no-image.png?raw=1" }}" alt="#" height="200" width="230">
                             </div>
                         </a>
                         <div class="best-offers-item-info">

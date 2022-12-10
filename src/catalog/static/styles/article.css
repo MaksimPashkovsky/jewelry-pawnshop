@@ -1,23 +1,23 @@
-.product {
+.article {
     display: flex;
 }
 
-.product-image {
+.article-image {
     width: 50%;
     display: flex;
     justify-content: center;
 }
 
-.product-description {
+.article-description {
     width: 50%;
     background-color: #adadad;
 }
 
-.product-description * {
+.article-description * {
     margin-left: 10px;
 }
 
-.product-description button {
+.article-description button {
     border-radius: 10px;
     border-width: thin;
     font-family: 'century gothic', monospace;

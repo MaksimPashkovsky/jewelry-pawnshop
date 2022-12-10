@@ -7,33 +7,33 @@ catalog = Blueprint('catalog', __name__, template_folder='templates', static_fol
 storage = DatabaseService()
 
 
-@catalog.route('/<product_type>', methods=['GET', 'POST'])
-def catalog_page(product_type):
+@catalog.route('/<article_type>', methods=['GET', 'POST'])
+def catalog_page(article_type):
 
-    product_type_object = storage.get_product_type_by_name(product_type.capitalize())
+    article_type_object = storage.get_article_type_by_name(article_type.capitalize())
 
-    # All products of concrete type
-    all_products = storage.get_products_by_type(product_type_object.id)
+    # All articles of concrete type
+    all_articles = storage.get_articles_by_type_id(article_type_object.type_id)
 
     if request.method == 'GET':
-        return render_template('catalog/catalog.html', product_type=product_type,
-                               products=sorted(all_products, key=attrgetter('name')))
+        return render_template('catalog/catalog.html', article_type=article_type,
+                               articles=sorted(all_articles, key=attrgetter('name')))
 
     search_string = request.form.get('search-string')
 
     if search_string:
-        all_products = list(filter(lambda x: SequenceMatcher(None, search_string, x.name).ratio() >= 0.3, all_products))
+        all_articles = list(filter(lambda x: SequenceMatcher(None, search_string, x.name).ratio() >= 0.3, all_articles))
 
     price_start = request.form.get('price-start')
     price_end = request.form.get('price-end')
 
-    if price_start == '' and all_products:
-        price_start = min(all_products, key=attrgetter('price')).price
+    if price_start == '' and all_articles:
+        price_start = min(all_articles, key=attrgetter('price')).price
 
-    if price_end == '' and all_products:
-        price_end = max(all_products, key=attrgetter('price')).price
+    if price_end == '' and all_articles:
+        price_end = max(all_articles, key=attrgetter('price')).price
 
-    filtered_products = list(filter(lambda x: float(price_start) <= x.price <= float(price_end), all_products))
+    filtered_articles = list(filter(lambda x: float(price_start) <= x.price <= float(price_end), all_articles))
 
     session['price_start'] = price_start
     session['price_end'] = price_end
@@ -41,24 +41,24 @@ def catalog_page(product_type):
     sorting_option = request.form.get('sorting')
 
     if sorting_option == 'num-of-purchased':
-        sorted_products = sorted(filtered_products, key=lambda x: len(storage.get_all_history_notes_by_product_id(x.id)), reverse=True)
+        sorted_articles = sorted(filtered_articles, key=lambda x: len(storage.get_all_history_notes_by_article_id(x.article_id)), reverse=True)
     else:
         field, order = sorting_option.split('-')
-        sorted_products = sorted(filtered_products, key=attrgetter(field), reverse=order == 'desc')
+        sorted_articles = sorted(filtered_articles, key=attrgetter(field), reverse=order == 'desc')
 
-    return render_template('catalog/catalog.html', product_type=product_type, products=sorted_products,
+    return render_template('catalog/catalog.html', article_type=article_type, articles=sorted_articles,
                            sorting_option=sorting_option)
 
 
-@catalog.route('/product/<id>')
-def product_page(id):
-    product = storage.get_product_by_id(id)
-    num_of_purchases = len(storage.get_all_history_notes_by_product_id(id))
-    return render_template('catalog/product.html', product=product, num_of_purchases=num_of_purchases)
+@catalog.route('/article/<id>')
+def article_page(id):
+    article = storage.get_article_by_id(id)
+    num_of_purchases = len(storage.get_all_history_notes_by_article_id(id))
+    return render_template('catalog/article.html', article=article, num_of_purchases=num_of_purchases)
 
 
-@catalog.route('/clear-filters/<product_type>')
-def clear_filters(product_type):
+@catalog.route('/clear-filters/<article_type>')
+def clear_filters(article_type):
     session['price_start'] = ''
     session['price_end'] = ''
-    return redirect(url_for('.catalog_page', product_type=product_type))
+    return redirect(url_for('.catalog_page', article_type=article_type))

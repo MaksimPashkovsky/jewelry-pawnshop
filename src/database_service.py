@@ -21,16 +21,18 @@ class DatabaseService:
     def get_all_articles(self):
         return self.session.query(Article).all()
 
+    def get_article_by_id(self, ar_id):
+        return self.session.query(Article).filter_by(article_id=ar_id).first()
+
+    def get_all_history_notes_by_article_id(self, article_id):
+        return self.session.query(HistoryNote).filter_by(article_id=article_id).all()
+
+    def get_article_type_by_name(self, name):
+        return self.session.query(ArticleType).filter_by(name=name).first()
+
+    def get_articles_by_type_id(self, type_id: int):
+        return self.session.query(Article).filter_by(type_id=type_id).all()
     '''
-    def get_product_type_by_name(self, name):
-        return self.session.query(ProductType).filter_by(name=name).first()
-
-    def get_products_by_type(self, type: int):
-        return self.session.query(Product).filter_by(type=type).all()
-
-    def get_product_by_id(self, pr_id):
-        return self.session.query(Product).filter_by(id=pr_id).first()
-
     def get_user_by_id(self, user_id):
         return self.session.query(User).get(user_id)
 
@@ -73,6 +75,5 @@ class DatabaseService:
     def get_all_history_notes_by_user_id(self, user_id):
         return self.session.query(HistoryNote).filter_by(user_id=user_id).all()
 
-    def get_all_history_notes_by_product_id(self, product_id):
-        return self.session.query(HistoryNote).filter_by(product_id=product_id).all()
+    
     '''

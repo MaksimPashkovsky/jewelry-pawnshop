@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    <title>Main page</title>
+{% endblock %}
+
+{% block links %}
+    <link rel="stylesheet" href="{{ url_for('catalog.static', filename='styles/article.css') }}">
+{% endblock %}
+
+{% block script %}
+    <script src="{{ url_for('catalog.static', filename='js/add_to_cart.js') }}"></script>
+    <script>
+        toastr.options.positionClass = "toast-bottom-right";
+        toastr.options.timeOut = 1500;
+    </script>
+{% endblock %}
+
+{% block main %}
+    <div class="article">
+        <div class="article-image">
+            <img src="{{ article.image if article.image else "https://www.dropbox.com/s/aoiyw8t7jvy206a/no-image.png?raw=1" }}" alt="#">
+        </div>
+        <div class="article-description">
+            <h2>Description:</h2>
+            <p>Name: {{ article.name }}</p>
+            <p>Type: {{ article.type.name }}</p>
+            <p>Price: ${{ article.estimated_price }}</p>
+            <p>Quantity: {{ article.quantity }}</p>
+            {% if current_user.is_authenticated %}
+                <button {{ "disabled" if article.quantity == 0 }} onclick="add_to_cart({{ article.article_id }}, '{{ url_for('cart.add_to_cart') }}')">Add to cart</button>
+            {% else %}
+                <button {{ "disabled" if article.quantity == 0 }} onclick="toastr.error('Sign in your account first!')">Add to cart</button>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

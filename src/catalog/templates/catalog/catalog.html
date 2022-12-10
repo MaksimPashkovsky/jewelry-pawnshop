@@ -21,10 +21,10 @@
 {% block main %}
     <div class="catalog">
         <div class="catalog-filter">
-            <form method="post" action="{{ url_for('catalog.catalog_page', product_type=product_type) }}">
+            <form method="post" action="{{ url_for('catalog.catalog_page', article_type=article_type) }}">
                 <div class="filter-head">
                     <b>F I L T E R S</b> |
-                    <a class="text" style="text-decoration: underline" href="{{ url_for('catalog.clear_filters', product_type=product_type) }}">Clear</a>
+                    <a class="text" style="text-decoration: underline" href="{{ url_for('catalog.clear_filters', article_type=article_type) }}">Clear</a>
                 </div>
                 <div class="filter-item">
                     <p><b>Search: </b></p>
@@ -53,30 +53,30 @@
             </form>
         </div>
         <div class="catalog-wrap">
-            {% if products %}
-                {% for product in products %}
+            {% if articles %}
+                {% for article in articles %}
                     <article class="catalog-item">
                         <div class="catalog-item-image">
-                            <a href={{ url_for('catalog.product_page', id=product.id) }}>
-                                <img src="{{ url_for('static', filename='images/' + product.image) if product.image else url_for('static', filename='images/no-image.png') }}" alt="#" height="200" width="230">
+                            <a href={{ url_for('catalog.article_page', id=article.article_id) }}>
+                                <img src="{{ article.image if article.image else "https://www.dropbox.com/s/aoiyw8t7jvy206a/no-image.png?raw=1" }}" alt="#" height="200" width="230">
                             </a>
                         </div>
                         <div class="catalog-item-info">
-                            <p style="text-align: center"><b>{{ product.name }}</b></p>
-                            <p>Price: ${{ product.price }}</p>
-                            <p>Quantity: {{ product.quantity }}</p>
+                            <p style="text-align: center"><b>{{ article.name }}</b></p>
+                            <p>Price: ${{ article.estimated_price }}</p>
+                            <p>Quantity: {{ article.quantity }}</p>
                         </div>
                         <div style="text-align: right">
                             {% if current_user.is_authenticated %}
-                                <button {{ "disabled" if product.quantity == 0 }} onclick="add_to_cart({{ product.id }}, '{{ url_for('cart.add_to_cart') }}')">Add to cart</button>
+                                <button {{ "disabled" if article.quantity == 0 }} onclick="add_to_cart({{ article.article_id }}, '{{ url_for('cart.add_to_cart') }}')">Add to cart</button>
                             {% else %}
-                                <button {{ "disabled" if product.quantity == 0 }} onclick="toastr.error('Sign in your account first!')">Add to cart</button>
+                                <button {{ "disabled" if article.quantity == 0 }} onclick="toastr.error('Sign in your account first!')">Add to cart</button>
                             {% endif %}
                         </div>
                     </article>
                 {% endfor %}
             {% else %}
-                <p>No products found...</p>
+                <p>No articles found...</p>
             {% endif %}
         </div>
     </div>
