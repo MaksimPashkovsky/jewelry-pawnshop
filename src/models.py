@@ -22,7 +22,6 @@ class Person:
     person_id = sa.Column(sa.Integer, primary_key=True)
     name = sa.Column(sa.String)
     surname = sa.Column(sa.String)
-    patronymic = sa.Column(sa.String)
     phone_number = sa.Column(sa.String)
     date_of_birth = sa.Column(sa.Date)
     sex = sa.Column(sa.Boolean)
@@ -31,10 +30,13 @@ class Person:
 class Appraiser(Person, Base):
     __tablename__ = 'Appraiser'
 
-    position = sa.Column(sa.String)
+    # position = sa.Column(sa.String)
     salary = sa.Column(sa.Numeric)
     employment_date = sa.Column(sa.Date)
     user_id = sa.Column(sa.Integer, sa.ForeignKey("User.user_id"))
+
+    def __repr__(self):
+        return " ".join((self.surname, self.name))
 
 
 class Article(Base):
@@ -63,6 +65,9 @@ class ArticleType(Base):
     type_id = sa.Column(sa.Integer, primary_key=True)
     name = sa.Column(sa.String)
 
+    def __repr__(self):
+        return self.name
+
 
 class Auction(Base):
     __tablename__ = 'Auction'
@@ -78,6 +83,9 @@ class Condition(Base):
     condition_id = sa.Column(sa.Integer, primary_key=True)
     name = sa.Column(sa.String)
 
+    def __repr__(self):
+        return self.name
+
 
 class Customer(Person, Base):
     __tablename__ = 'Customer'
@@ -87,12 +95,15 @@ class Customer(Person, Base):
     passport_object = relationship('PassportInfo')
     user_id = sa.Column(sa.Integer, sa.ForeignKey("User.user_id"))
 
+    def __repr__(self):
+        return " ".join((self.surname, self.name))
+
 
 class PassportInfo(Base):
     __tablename__ = 'PassportInfo'
 
     passport_id = sa.Column(sa.Integer, primary_key=True)
-    type = sa.Column(sa.Integer)
+    type = sa.Column(sa.String)
     code_of_issuing_state = sa.Column(sa.String)
     passport_number = sa.Column(sa.String)
     surname = sa.Column(sa.String)
@@ -105,6 +116,9 @@ class PassportInfo(Base):
     date_of_issue = sa.Column(sa.Date)
     date_of_expiry = sa.Column(sa.Date)
     authority = sa.Column(sa.String)
+
+    def __repr__(self):
+        return " ".join((self.surname, self.name, self.identification_number))
 
 
 class SoldLot(Base):

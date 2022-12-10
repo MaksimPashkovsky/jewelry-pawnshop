@@ -18,6 +18,9 @@ class DatabaseService:
     def get_all_article_types(self):
         return self.session.query(ArticleType).all()
 
+    def get_all_articles(self):
+        return self.session.query(Article).all()
+
     '''
     def get_product_type_by_name(self, name):
         return self.session.query(ProductType).filter_by(name=name).first()
