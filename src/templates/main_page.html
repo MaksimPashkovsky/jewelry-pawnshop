@@ -13,17 +13,17 @@
         <div class="best-offers">
             <div style="text-align: center">Best offers</div>
             <div class="best-offers-container">
-                {% for product in random_products %}
+                {% for article in random_articles %}
                     <div class="best-offers-item">
-                        <a href={{ url_for('catalog.product_page', id=product.id) }}>
+                        <a href={{ url_for('catalog.product_page', id=article.article_id) }}>
                             <div class="best-offers-item-image">
-                                <img src="../static/images/{{ product.image if product.image else "no-image.png" }}" alt="#" height="200" width="230">
+                                <img src="{{ article.image if article.image else "https://drive.google.com/uc?export=view&id=1qNdVqYxBfeczF0tAMVaLD2YEM1z1SKNK" }}" alt="#" height="200" width="230">
                             </div>
                         </a>
                         <div class="best-offers-item-info">
-                            <p style="text-align: center"><b>{{ product.name }}</b></p>
-                            <p>Price: ${{ product.price }}</p>
-                            <p>Quantity: {{ product.quantity }}</p>
+                            <p style="text-align: center"><b>{{ article.name }}</b></p>
+                            <p>Price: ${{ article.estimated_price }}</p>
+                            <p>Quantity: {{ article.quantity }}</p>
                         </div>
                     </div>
                 {% endfor %}

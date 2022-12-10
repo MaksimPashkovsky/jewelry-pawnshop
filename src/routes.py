@@ -14,9 +14,9 @@ def load_user(user_id):
 
 @app.route('/')
 def main_page():
-    all_products = storage.get_all_articles()
-    random_products = random.sample(all_products, 3)
-    return render_template('main_page.html', random_products=random_products)
+    all_articles = storage.get_all_articles()
+    random_articles = random.sample(all_articles, 3)
+    return render_template('main_page.html', random_articles=random_articles)
 
 
 @app.route('/login', methods=['GET', 'POST'])
