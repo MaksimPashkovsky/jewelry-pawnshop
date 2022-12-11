@@ -49,6 +49,7 @@ class Article(Base):
     weight = sa.Column(sa.Numeric)
     estimated_price = sa.Column(sa.Numeric)
     receipt_date = sa.Column(sa.Date)
+    expiry_date = sa.Column(sa.Date)
     appraiser_id = sa.Column(sa.Integer, sa.ForeignKey('Appraiser.person_id'))
     appraiser = relationship("Appraiser")
     customer_id = sa.Column(sa.Integer, sa.ForeignKey('Customer.person_id'))
@@ -57,6 +58,7 @@ class Article(Base):
     type = relationship("ArticleType")
     quantity = sa.Column(sa.Integer)
     image = sa.Column(sa.String)
+    for_sale = sa.Column(sa.Boolean)
 
     def __repr__(self):
         return "{}, ${}".format(self.name, self.estimated_price)

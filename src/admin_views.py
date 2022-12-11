@@ -24,7 +24,7 @@ def add_all_views(admin):
 
 class ArticleView(ModelView):
     column_list = ['name', 'type', 'condition', 'weight', 'quantity',
-                   'estimated_price', 'receipt_date', 'appraiser', 'customer', 'image']
+                   'estimated_price', 'receipt_date', 'expiry_date','appraiser', 'customer', 'for_sale', 'image']
 
 
 class Controller(ModelView):
