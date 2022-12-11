@@ -145,6 +145,16 @@ class User(Base, UserMixin):
     is_verified = sa.Column(sa.Boolean)
     account_id = sa.Column(sa.Integer, sa.ForeignKey("Account.account_id"))
 
+    def __init__(self, login, password, email, reg_date, is_verified=False):
+        self.login = login
+        self.password = password
+        self.email = email
+        self.registration_date = reg_date
+        self.is_verified = is_verified
+
+    def get_id(self):
+        return self.user_id
+
 
 class CartNote(Base):
     __tablename__ = 'Cart'

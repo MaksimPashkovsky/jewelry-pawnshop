@@ -39,8 +39,8 @@ def login_page():
             return redirect(url_for('login_page'))
         login_user(user)
         next_page = request.form.get('next')
-        if user.is_admin:
-            return redirect('/admin/')
+        #if user.is_admin:
+        #    return redirect('/admin/')
         if next_page:
             return redirect(next_page)
         return redirect(url_for('main_page'))
@@ -69,7 +69,7 @@ def register_page():
     session['email'] = email
 
     new_user = User(login=login, password=generate_password_hash(password),
-                    email=email, reg_date=datetime.now(), is_verified=False, is_admin=False)
+                    email=email, reg_date=datetime.now(), is_verified=False)
 
     storage.save(new_user)
     return redirect(url_for('email.send_email'))

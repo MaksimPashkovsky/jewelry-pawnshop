@@ -32,24 +32,12 @@ class DatabaseService:
 
     def get_articles_by_type_id(self, type_id: int):
         return self.session.query(Article).filter_by(type_id=type_id).all()
-    '''
-    def get_user_by_id(self, user_id):
-        return self.session.query(User).get(user_id)
 
-    def get_user_by_login(self, login):
-        return self.session.query(User).filter_by(login=login).first()
+    def get_all_logins(self):
+        return [item[0] for item in self.session.query(User.login).all()]
 
-    def get_user_by_email(self, email):
-        return self.session.query(User).filter_by(email=email).first()
-
-    def get_all_products(self):
-        return self.session.query(Product).all()
-
-    def get_cart_note(self, user_id, product_id):
-        return self.session.query(CartNote).filter_by(user_id=user_id, product_id=product_id).first()
-
-    def get_cart_notes_by_user_id(self, user_id):
-        return self.session.query(CartNote).filter_by(user_id=user_id).all()
+    def get_all_emails(self):
+        return [item[0] for item in self.session.query(User.email).all()]
 
     def save(self, new_obj):
         self.session.add(new_obj)
@@ -59,21 +47,32 @@ class DatabaseService:
         self.session.delete(obj_to_delete)
         self.session.commit()
 
+    def get_user_by_email(self, email):
+        return self.session.query(User).filter_by(email=email).first()
+
+    def get_user_by_login(self, login):
+        return self.session.query(User).filter_by(login=login).first()
+
+    def get_user_by_id(self, user_id):
+        return self.session.query(User).get(user_id)
+
+    '''
+    def get_all_products(self):
+        return self.session.query(Product).all()
+
+    def get_cart_note(self, user_id, product_id):
+        return self.session.query(CartNote).filter_by(user_id=user_id, product_id=product_id).first()
+
+    def get_cart_notes_by_user_id(self, user_id):
+        return self.session.query(CartNote).filter_by(user_id=user_id).all()
+
     def delete_cart_notes_by_user_id(self, user_id):
         self.session.query(CartNote).filter_by(user_id=user_id).delete(synchronize_session='fetch')
         self.session.commit()
-
-    def get_all_logins(self):
-        return [item[0] for item in self.session.query(User.login).all()]
-
-    def get_all_emails(self):
-        return [item[0] for item in self.session.query(User.email).all()]
 
     def get_user_column(self, field: str):
         return [item[0] for item in self.session.query(getattr(User, field)).all()]
 
     def get_all_history_notes_by_user_id(self, user_id):
         return self.session.query(HistoryNote).filter_by(user_id=user_id).all()
-
-    
     '''
