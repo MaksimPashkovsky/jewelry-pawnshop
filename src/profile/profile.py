@@ -23,7 +23,7 @@ def save_profile_info():
     if field != 'balance' and value in storage.get_user_column(field):
         return '', 500
 
-    user = storage.get_user_by_id(current_user.id)
+    user = storage.get_user_by_id(current_user.user_id)
     setattr(user, field, value)
     storage.save(user)
     return '', 200
@@ -36,7 +36,7 @@ def change_password():
     old_password = data['old_password']
     new_password = data['new_password']
 
-    user = storage.get_user_by_id(current_user.id)
+    user = storage.get_user_by_id(current_user.user_id)
 
     if check_password_hash(user.password, old_password):
         user.password = generate_password_hash(new_password)
@@ -48,7 +48,7 @@ def change_password():
 @profile.route('/history', methods=['GET'])
 @login_required
 def history_page():
-    history_notes = storage.get_all_history_notes_by_user_id(current_user.id)
+    history_notes = storage.get_all_history_notes_by_user_id(current_user.user_id)
     d = [(note.date, note) for note in history_notes]
     res = defaultdict(list)
     for k, v in d:

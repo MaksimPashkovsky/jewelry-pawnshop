@@ -18,17 +18,17 @@
                         {% for item in note['items'] %}
                             <div class="history-item">
                                 <div class="history-item-image">
-                                    <img src="../static/images/{{ item.product.image if item.product.image else "no-image.png" }}" alt="#" height="200" width="230">
+                                    <img src="{{ item.article.image if item.article.image else "no-image.png" }}" alt="#" height="200" width="230">
                                 </div>
                                 <div class="history-item-info">
-                                    <p style="text-align: center"><b>{{ item.product.name }}</b></p>
-                                    <p>Price: ${{ item.product.price }}</p>
+                                    <p style="text-align: center"><b>{{ item.article.name }}</b></p>
+                                    <p>Price: ${{ item.article.estimated_price }}</p>
                                 </div>
                             </div>
                         {% endfor %}
                     </div>
                     {{ set }}
-                    <h4>Total sum: ${{ note['items']|sum(attribute='product.price') }}</h4>
+                    <h4>Total sum: ${{ note['items']|sum(attribute='article.estimated_price') }}</h4>
                 </div>
             {% endfor %}
         {% else %}

@@ -66,19 +66,9 @@ class DatabaseService:
         self.session.query(CartNote).filter_by(user_id=user_id).delete(synchronize_session='fetch')
         self.session.commit()
 
-    '''
-    def get_all_products(self):
-        return self.session.query(Product).all()
-
-    
-
-    
-
-    
-
     def get_user_column(self, field: str):
         return [item[0] for item in self.session.query(getattr(User, field)).all()]
 
     def get_all_history_notes_by_user_id(self, user_id):
         return self.session.query(HistoryNote).filter_by(user_id=user_id).all()
-    '''
+
