@@ -29,9 +29,9 @@ class ArticleView(ModelView):
 
 class Controller(ModelView):
     def is_accessible(self):
-        '''if current_user.is_authenticated and current_user.is_admin:
+        if current_user.is_authenticated and storage.is_user_admin(current_user):
             return True
-        abort(404)'''
+        abort(404)
         return True
 
     def inaccessible_callback(self, name, **kwargs):

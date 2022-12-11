@@ -49,7 +49,7 @@
             </div>
             <div class="profile-item">
                 <label>Balance</label>
-                <input value="{{ current_user.balance }}" readonly id="balance">
+                <input value="{{ current_user.account.balance }}" readonly id="balance">
                 <button onclick="top_up()">Top up</button>
             </div>
         </div>

@@ -72,3 +72,7 @@ class DatabaseService:
     def get_all_history_notes_by_user_id(self, user_id):
         return self.session.query(HistoryNote).filter_by(user_id=user_id).all()
 
+    def is_user_admin(self, user):
+        if user.user_id in [a.user_id for a in self.session.query(Appraiser).all()]:
+            return True
+        return False

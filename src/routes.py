@@ -37,12 +37,16 @@ def login_page():
         if not user.is_verified:
             flash('Account is not verified. Check your email', 'warning')
             return redirect(url_for('login_page'))
+
         login_user(user)
         next_page = request.form.get('next')
-        #if user.is_admin:
-        #    return redirect('/admin/')
+
+        if storage.is_user_admin(user):
+            return redirect('/admin/')
+
         if next_page:
             return redirect(next_page)
+
         return redirect(url_for('main_page'))
     flash('Wrong password!', 'error')
     return redirect(url_for('login_page'))
