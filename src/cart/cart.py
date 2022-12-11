@@ -13,9 +13,9 @@ storage = DatabaseService()
 @cart.route('/', methods=['GET'])
 @login_required
 def cart_page():
-    cart_notes = storage.get_cart_notes_by_user_id(current_user.id)
-    products = [note.product for note in cart_notes]
-    return render_template('cart/cart.html', products=products)
+    cart_notes = storage.get_cart_notes_by_user_id(current_user.user_id)
+    articles = [note.article for note in cart_notes]
+    return render_template('cart/cart.html', articles=articles)
 
 
 @cart.route('/add', methods=['POST'])
@@ -23,7 +23,7 @@ def cart_page():
 def add_to_cart():
     data = request.get_json()
     id = data['id']
-    new_cart_note = CartNote(user_id=current_user.id, product_id=id)
+    new_cart_note = CartNote(user_id=current_user.user_id, article_id=id)
     storage.save(new_cart_note)
     return '', 204
 
@@ -31,7 +31,7 @@ def add_to_cart():
 @cart.route('/remove/<id>', methods=['GET'])
 @login_required
 def remove_from_cart(id):
-    note_to_delete = storage.get_cart_note(current_user.id, id)
+    note_to_delete = storage.get_cart_note(current_user.user_id, id)
     storage.delete(note_to_delete)
     flash('Removed from cart')
     return redirect(url_for('.cart_page'))
@@ -40,7 +40,7 @@ def remove_from_cart(id):
 @cart.route('/remove-all', methods=['GET'])
 @login_required
 def remove_all_from_cart():
-    storage.delete_cart_notes_by_user_id(current_user.id)
+    storage.delete_cart_notes_by_user_id(current_user.user_id)
     flash('Removed all')
     return redirect(url_for('.cart_page'))
 
@@ -50,33 +50,33 @@ def remove_all_from_cart():
 def confirm():
     date = datetime.now()
     total_sum = 0
-    products = ''
-    cart_notes = storage.get_cart_notes_by_user_id(current_user.id)
+    articles = ''
+    cart_notes = storage.get_cart_notes_by_user_id(current_user.user_id)
 
-    quantities = Counter([note.product_id for note in cart_notes])
+    quantities = Counter([note.article_id for note in cart_notes])
 
     for k, v in quantities.items():
-        product = storage.get_product_by_id(k)
-        if product.quantity < v:
+        article = storage.get_article_by_id(k)
+        if article.quantity < v:
             return '', 500
 
     for note in cart_notes:
-        product = storage.get_product_by_id(note.product_id)
-        total_sum += product.price
-        product.quantity -= 1
-        products += str(product) + '\n'
-        storage.save(HistoryNote(user_id=current_user.id, product_id=product.id, date=date))
-        storage.save(product)
+        article = storage.get_article_by_id(note.article_id)
+        total_sum += article.estimated_price
+        article.quantity -= 1
+        articles += str(article) + '\n'
+        storage.save(HistoryNote(user_id=current_user.user_id, article_id=article.article_id, date=date))
+        storage.save(article)
         storage.delete(note)
 
     cheque_body = 'UVELIRKA JEWELRY PAWNSHOP\n\n'
     cheque_body += f'{date} you bought {len(cart_notes)} items, total amount: ${total_sum}\n'
     cheque_body += f'Items:\n'
-    cheque_body += products + '\n\n'
+    cheque_body += articles + '\n\n'
     cheque_body += url_for('main_page', _external=True) + '\n'
     cheque_body += 'Thank you!'
 
-    user = storage.get_user_by_id(current_user.id)
+    user = storage.get_user_by_id(current_user.user_id)
     user.balance -= total_sum
     storage.save(user)
     mail_service.send_email(current_user.email, 'Your cheque', cheque_body)

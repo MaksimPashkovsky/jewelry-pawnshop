@@ -19,31 +19,31 @@
 {% block main %}
     <div class="cart">
         <div class="cart-items">
-            {% if products %}
-                {% for product in products %}
+            {% if articles %}
+                {% for article in articles %}
                     <div class="cart-item">
                         <div class="cart-item-image">
-                            <img src="../static/images/{{ product.image if product.image else "no-image.png" }}" alt="#" height="200" width="230">
+                            <img src="{{ product.image if product.image else "https://www.dropbox.com/s/aoiyw8t7jvy206a/no-image.png?raw=1" }}" alt="#" height="200" width="230">
                         </div>
                         <div class="cart-item-info">
-                            <p style="text-align: center"><b>{{ product.name }}</b></p>
-                            <p>Price: ${{ product.price }}</p>
+                            <p style="text-align: center"><b>{{ article.name }}</b></p>
+                            <p>Price: ${{ article.estimated_price }}</p>
                         </div>
                         <p style="text-align: right">
-                        <a href="{{ url_for('cart.remove_from_cart', id=product.id) }}">
+                        <a href="{{ url_for('cart.remove_from_cart', id=article.article_id) }}">
                             <button>Remove</button>
                         </a></p>
                     </div>
                 {% endfor %}
             {% else %}
-                No products in cart...
+                No articles in cart...
             {% endif %}
         </div>
         <div class="payment">
-            <p>Products in cart: {{ products|length }}</p>
+            <p>Articles in cart: {{ articles|length }}</p>
             <a class="text" style="text-decoration: underline" href="{{ url_for('cart.remove_all_from_cart') }}">Remove all</a>
-            <p>Total price: ${{ products|sum(attribute='price') }}</p>
-            <p style="text-align: center"><button {{ "hidden" if not products }} onclick="confirm_purchase({{ current_user.balance }}, {{ products|sum(attribute='price') }}, '{{ url_for('cart.confirm') }}', '{{ url_for('main_page') }}')">Confirm</button></p>
+            <p>Total price: ${{ articles|sum(attribute='estimated_price') }}</p>
+            <p style="text-align: center"><button {{ "hidden" if not articles }} onclick="confirm_purchase({{ current_user.account.balance }}, {{ articles|sum(attribute='estimated_price') }}, '{{ url_for('cart.confirm') }}', '{{ url_for('main_page') }}')">Confirm</button></p>
         </div>
     </div>
 {% endblock %}

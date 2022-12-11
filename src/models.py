@@ -58,6 +58,9 @@ class Article(Base):
     quantity = sa.Column(sa.Integer)
     image = sa.Column(sa.String)
 
+    def __repr__(self):
+        return "{}, ${}".format(self.name, self.estimated_price)
+
 
 class ArticleType(Base):
     __tablename__ = 'ArticleType'
@@ -144,6 +147,7 @@ class User(Base, UserMixin):
     registration_date = sa.Column(sa.Date)
     is_verified = sa.Column(sa.Boolean)
     account_id = sa.Column(sa.Integer, sa.ForeignKey("Account.account_id"))
+    account = relationship("Account", foreign_keys=[account_id])
 
     def __init__(self, login, password, email, reg_date, is_verified=False):
         self.login = login
@@ -162,6 +166,11 @@ class CartNote(Base):
     cart_id = sa.Column(sa.Integer, primary_key=True)
     user_id = sa.Column(sa.Integer, sa.ForeignKey("User.user_id"))
     article_id = sa.Column(sa.Integer, sa.ForeignKey("Article.article_id"))
+    article = relationship("Article")
+
+    def __init__(self, user_id, article_id):
+        self.user_id = user_id
+        self.article_id = article_id
 
 
 class HistoryNote(Base):
@@ -171,3 +180,8 @@ class HistoryNote(Base):
     user_id = sa.Column(sa.Integer, sa.ForeignKey("User.user_id"))
     article_id = sa.Column(sa.Integer, sa.ForeignKey("Article.article_id"))
     date = sa.Column(sa.Date)
+
+    def __init__(self, user_id, article_id, date):
+        self.user_id = user_id
+        self.article_id = article_id
+        self.date = date

@@ -56,19 +56,25 @@ class DatabaseService:
     def get_user_by_id(self, user_id):
         return self.session.query(User).get(user_id)
 
-    '''
-    def get_all_products(self):
-        return self.session.query(Product).all()
-
-    def get_cart_note(self, user_id, product_id):
-        return self.session.query(CartNote).filter_by(user_id=user_id, product_id=product_id).first()
-
     def get_cart_notes_by_user_id(self, user_id):
         return self.session.query(CartNote).filter_by(user_id=user_id).all()
+
+    def get_cart_note(self, user_id, article_id):
+        return self.session.query(CartNote).filter_by(user_id=user_id, article_id=article_id).first()
 
     def delete_cart_notes_by_user_id(self, user_id):
         self.session.query(CartNote).filter_by(user_id=user_id).delete(synchronize_session='fetch')
         self.session.commit()
+
+    '''
+    def get_all_products(self):
+        return self.session.query(Product).all()
+
+    
+
+    
+
+    
 
     def get_user_column(self, field: str):
         return [item[0] for item in self.session.query(getattr(User, field)).all()]
