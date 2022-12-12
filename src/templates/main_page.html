@@ -17,7 +17,7 @@
                     <div class="best-offers-item">
                         <a href={{ url_for('catalog.article_page', id=article.article_id) }}>
                             <div class="best-offers-item-image">
-                                <img src="{{ article.image if article.image else "https://www.dropbox.com/s/aoiyw8t7jvy206a/no-image.png?raw=1" }}" alt="#" height="200" width="230">
+                                <img src="../static/images/{{ article.image if article.image else "no-image.png" }}" alt="Image not found" height="200" width="230">
                             </div>
                         </a>
                         <div class="best-offers-item-info">

@@ -23,7 +23,7 @@
                 {% for article in articles %}
                     <div class="cart-item">
                         <div class="cart-item-image">
-                            <img src="{{ product.image if product.image else "https://www.dropbox.com/s/aoiyw8t7jvy206a/no-image.png?raw=1" }}" alt="#" height="200" width="230">
+                            <img src="../static/images/{{ product.image if product.image else "no-image.png" }}" alt="Image not found" height="200" width="230">
                         </div>
                         <div class="cart-item-info">
                             <p style="text-align: center"><b>{{ article.name }}</b></p>
