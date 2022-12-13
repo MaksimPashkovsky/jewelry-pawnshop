@@ -24,7 +24,10 @@ def save_profile_info():
         return '', 500
 
     user = storage.get_user_by_id(current_user.user_id)
-    setattr(user, field, value)
+    if field == 'balance':
+        user.account.balance = value
+    else:
+        setattr(user, field, value)
     storage.save(user)
     return '', 200
 

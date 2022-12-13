@@ -14,8 +14,12 @@ class Account(Base):
     account_id = sa.Column(sa.Integer, primary_key=True)
     bank = sa.Column(sa.String)
     account_number = sa.Column(sa.String)
-    user_id = sa.Column(sa.Integer, sa.ForeignKey("User.user_id"))
     balance = sa.Column(sa.Float)
+
+    def __init__(self, bank, account_number, balance=0.0):
+        self.bank = bank
+        self.account_number = account_number
+        self.balance = balance
 
 
 class Person:
@@ -151,15 +155,19 @@ class User(Base, UserMixin):
     account_id = sa.Column(sa.Integer, sa.ForeignKey("Account.account_id"))
     account = relationship("Account", foreign_keys=[account_id])
 
-    def __init__(self, login, password, email, reg_date, is_verified=False):
+    def __init__(self, login, password, email, reg_date, account_id, is_verified=False):
         self.login = login
         self.password = password
         self.email = email
         self.registration_date = reg_date
+        self.account_id = account_id
         self.is_verified = is_verified
 
     def get_id(self):
         return self.user_id
+
+    def __repr__(self):
+        return self.login
 
 
 class CartNote(Base):

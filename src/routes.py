@@ -4,7 +4,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from flask import render_template, request, flash, redirect, url_for, session
 from flask_login import login_user, login_required, logout_user
 from src import app, login_manager, storage
-from models import User
+from models import User, Account
 
 
 @login_manager.user_loader
@@ -72,8 +72,11 @@ def register_page():
 
     session['email'] = email
 
+    new_account = Account('Belarusbank', str(random.random() * 10**15))
+    storage.save(new_account)
+
     new_user = User(login=login, password=generate_password_hash(password),
-                    email=email, reg_date=datetime.now(), is_verified=False)
+                    email=email, reg_date=datetime.now(), account_id=new_account.account_id, is_verified=False)
 
     storage.save(new_user)
     return redirect(url_for('email.send_email'))
