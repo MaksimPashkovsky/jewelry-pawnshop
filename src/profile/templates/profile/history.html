@@ -18,7 +18,7 @@
                         {% for item in note['items'] %}
                             <div class="history-item">
                                 <div class="history-item-image">
-                                    <img src="{{ item.article.image if item.article.image else "no-image.png" }}" alt="#" height="200" width="230">
+                                    <img src="{{ url_for('static', filename='images/') + item.article.image if item.article.image else "no-image.png" }}" alt="#" height="200" width="230">
                                 </div>
                                 <div class="history-item-info">
                                     <p style="text-align: center"><b>{{ item.article.name }}</b></p>

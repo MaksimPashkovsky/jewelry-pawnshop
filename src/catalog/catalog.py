@@ -15,6 +15,8 @@ def catalog_page(article_type):
     # All articles of concrete type
     all_articles = storage.get_articles_by_type_id(article_type_object.type_id)
 
+    all_articles = list(filter(lambda x: x.quantity != 0, all_articles))
+
     if request.method == 'GET':
         return render_template('catalog/catalog.html', article_type=article_type,
                                articles=sorted(all_articles, key=attrgetter('name')))
@@ -28,12 +30,12 @@ def catalog_page(article_type):
     price_end = request.form.get('price-end')
 
     if price_start == '' and all_articles:
-        price_start = min(all_articles, key=attrgetter('price')).price
+        price_start = min(all_articles, key=attrgetter('estimated_price')).estimated_price
 
     if price_end == '' and all_articles:
-        price_end = max(all_articles, key=attrgetter('price')).price
+        price_end = max(all_articles, key=attrgetter('estimated_price')).estimated_price
 
-    filtered_articles = list(filter(lambda x: float(price_start) <= x.price <= float(price_end), all_articles))
+    filtered_articles = list(filter(lambda x: float(price_start) <= x.estimated_price <= float(price_end), all_articles))
 
     session['price_start'] = price_start
     session['price_end'] = price_end

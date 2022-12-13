@@ -43,8 +43,8 @@
                         <option value="name-asc">↑ Name</option>
                         <option value="name-desc">↓ Name</option>
                         <option value="num-of-purchased">Most purchased</option>
-                        <option value="price-asc">↑ Price</option>
-                        <option value="price-desc">↓ Price</option>
+                        <option value="estimated_price-asc">↑ Price</option>
+                        <option value="estimated_price-desc">↓ Price</option>
                         <option value="quantity-asc">↑ Quantity</option>
                         <option value="quantity-desc">↓ Quantity</option>
                     </select>
@@ -58,7 +58,7 @@
                     <article class="catalog-item">
                         <div class="catalog-item-image">
                             <a href={{ url_for('catalog.article_page', id=article.article_id) }}>
-                                <img src="../static/images/{{ article.image if article.image else "no-image.png" }}" alt="#" height="200" width="230">
+                                <img src="{{ url_for('static', filename='images/') + article.image if article.image else "no-image.png" }}" alt="#" height="200" width="230">
                             </a>
                         </div>
                         <div class="catalog-item-info">

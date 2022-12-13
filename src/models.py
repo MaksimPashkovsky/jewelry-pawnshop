@@ -14,12 +14,15 @@ class Account(Base):
     account_id = sa.Column(sa.Integer, primary_key=True)
     bank = sa.Column(sa.String)
     account_number = sa.Column(sa.String)
-    balance = sa.Column(sa.Float)
+    balance = sa.Column(sa.Numeric)
 
-    def __init__(self, bank, account_number, balance=0.0):
+    def __init__(self, bank, account_number, balance=0):
         self.bank = bank
         self.account_number = account_number
         self.balance = balance
+
+    def __repr__(self):
+        return self.account_number
 
 
 class Person:
@@ -29,6 +32,13 @@ class Person:
     phone_number = sa.Column(sa.String)
     date_of_birth = sa.Column(sa.Date)
     sex = sa.Column(sa.Boolean)
+
+    def __init__(self, name=None, surname=None, phone_number=None, date_of_birth=None, sex=None):
+        self.name = name
+        self.surname = surname
+        self.phone_number = phone_number
+        self.date_of_birth = date_of_birth
+        self.sex = sex
 
 
 class Appraiser(Person, Base):
@@ -103,9 +113,19 @@ class Customer(Person, Base):
     passport_id = sa.Column(sa.Integer, sa.ForeignKey('PassportInfo.passport_id'))
     passport_object = relationship('PassportInfo')
     user_id = sa.Column(sa.Integer, sa.ForeignKey("User.user_id"))
+    user = relationship("User")
+
+    def __init__(self, user_id, discount=0):
+        Person.__init__(self)
+        self.user_id = user_id
+        self.discount = discount
 
     def __repr__(self):
-        return " ".join((self.surname, self.name))
+        try:
+            string = " ".join((self.surname, self.name))
+        except Exception:
+            string = self.user.login
+        return string
 
 
 class PassportInfo(Base):
@@ -189,6 +209,7 @@ class HistoryNote(Base):
     history_id = sa.Column(sa.Integer, primary_key=True)
     user_id = sa.Column(sa.Integer, sa.ForeignKey("User.user_id"))
     article_id = sa.Column(sa.Integer, sa.ForeignKey("Article.article_id"))
+    article = relationship("Article")
     date = sa.Column(sa.Date)
 
     def __init__(self, user_id, article_id, date):

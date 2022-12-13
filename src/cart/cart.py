@@ -77,7 +77,10 @@ def confirm():
     cheque_body += 'Thank you!'
 
     user = storage.get_user_by_id(current_user.user_id)
-    user.balance -= total_sum
-    storage.save(user)
+
+    account = storage.get_account_by_id(user.account_id)
+    account.balance -= total_sum
+    storage.save(account)
+
     mail_service.send_email(current_user.email, 'Your cheque', cheque_body)
     return '', 200

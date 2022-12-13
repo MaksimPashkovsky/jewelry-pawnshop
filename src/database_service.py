@@ -76,3 +76,6 @@ class DatabaseService:
         if user.user_id in [a.user_id for a in self.session.query(Appraiser).all()]:
             return True
         return False
+
+    def get_account_by_id(self, acc_id):
+        return self.session.query(Account).filter_by(account_id=acc_id).first()
