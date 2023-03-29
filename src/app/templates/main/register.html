@@ -6,8 +6,8 @@
     {{ toastr.message() }}
     <meta charset="UTF-8">
     <title>Register page</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/login.css') }}">
-    <script src="{{ url_for('static', filename='js/register_validate.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('.static', filename='styles/login.css') }}">
+    <script src="{{ url_for('.static', filename='js/register_validate.js') }}"></script>
 </head>
 <body>
     {{ toastr.include_toastr_js() }}
@@ -36,7 +36,7 @@
             </div>
             <input type="submit" value="Register">
             <div class="signup_link">
-                Already have an account? <a href="{{ url_for('login_page') }}">Sign in</a>
+                Already have an account? <a href="{{ url_for('main.login_page') }}">Sign in</a>
             </div>
         </form>
     </div>

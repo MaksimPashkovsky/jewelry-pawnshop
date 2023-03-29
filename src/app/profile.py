@@ -4,14 +4,14 @@ from flask_login import login_required, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
 from database_service import DatabaseService
 
-profile = Blueprint('profile', __name__, template_folder='templates', static_folder='static')
+profile = Blueprint('profile', __name__, template_folder='templates/profile', static_folder='static/profile')
 storage = DatabaseService()
 
 
 @profile.route('/', methods=['GET'])
 @login_required
 def profile_page():
-    return render_template('profile/profile.html')
+    return render_template('profile.html')
 
 
 @profile.route('/save', methods=['POST'])
@@ -58,4 +58,4 @@ def history_page():
         res[k].append(v)
     final = [{'date': k, 'items': v} for k, v in res.items()]
     final.sort(key=lambda x: x['date'], reverse=True)
-    return render_template('profile/history.html', notes=final)
+    return render_template('history.html', notes=final)

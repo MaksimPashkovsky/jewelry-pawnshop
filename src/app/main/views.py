@@ -3,23 +3,20 @@ from datetime import datetime
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask import render_template, request, flash, redirect, url_for, session
 from flask_login import login_user, login_required, logout_user
-from src import app, login_manager, storage
-from models import User, Account, Customer
+from . import main
+from app import storage
+from app.models import User, Account, Customer
 
 
-@login_manager.user_loader
-def load_user(user_id):
-    return storage.get_user_by_id(user_id)
-
-
-@app.route('/')
+@main.route('/')
 def main_page():
     all_articles = storage.get_all_articles()
-    random_articles = random.sample(all_articles, 3)
+    #random_articles = random.sample(all_articles, 3)
+    random_articles = []
     return render_template('main_page.html', random_articles=random_articles)
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@main.route('/login', methods=['GET', 'POST'])
 def login_page():
 
     if request.method == 'GET':
@@ -52,7 +49,7 @@ def login_page():
     return redirect(url_for('login_page'))
 
 
-@app.route('/register', methods=['GET', 'POST'])
+@main.route('/register', methods=['GET', 'POST'])
 def register_page():
 
     if request.method == 'GET':
@@ -85,7 +82,7 @@ def register_page():
     return redirect(url_for('email.send_email'))
 
 
-@app.route('/logout', methods=['GET'])
+@main.route('/logout', methods=['GET'])
 @login_required
 def logout_page():
     logout_user()
@@ -93,7 +90,7 @@ def logout_page():
     return redirect(url_for('main_page'))
 
 
-@app.after_request
+@main.after_request
 def redirect_to_sign_in(response):
     if response.status_code == 401:
         return redirect(url_for('login_page') + '?next=' + request.url)

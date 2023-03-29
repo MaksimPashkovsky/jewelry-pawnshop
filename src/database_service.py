@@ -1,19 +1,11 @@
-from db_setup import session
-from models import *
+from app.models import *
 
 
 class DatabaseService:
-    _instance = None
-    session = None
 
-    def __new__(cls, *args, **kwargs):
-        if cls._instance is None:
-            cls._instance = super().__new__(cls, *args, **kwargs)
-            cls.__init__(cls._instance)
-        return cls._instance
-
-    def __init__(self):
-        self.session = session
+    def __init__(self, db):
+        self.db = db
+        self.session = db.session
 
     def get_all_article_types(self):
         return self.session.query(ArticleType).all()

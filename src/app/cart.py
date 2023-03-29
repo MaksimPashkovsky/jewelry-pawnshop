@@ -2,12 +2,11 @@ from datetime import datetime
 from collections import Counter
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
-from database_service import DatabaseService
-from models import CartNote, HistoryNote
+from . import storage
+from app.models import CartNote, HistoryNote
 from email_ import mail_service
 
-cart = Blueprint('cart', __name__, template_folder='templates', static_folder='static')
-storage = DatabaseService()
+cart = Blueprint('cart', __name__, template_folder='templates/cart', static_folder='static/cart')
 
 
 @cart.route('/', methods=['GET'])
@@ -15,7 +14,7 @@ storage = DatabaseService()
 def cart_page():
     cart_notes = storage.get_cart_notes_by_user_id(current_user.user_id)
     articles = [note.article for note in cart_notes]
-    return render_template('cart/cart.html', articles=articles)
+    return render_template('cart.html', articles=articles)
 
 
 @cart.route('/add', methods=['POST'])

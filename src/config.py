@@ -5,6 +5,11 @@ class Config:
     pass
 
 
+class DatabaseConfig(Config):
+    SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:password@localhost:5432/pawnshop-db'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+
 class AppConfig(Config):
     SECRET_KEY = config('APP_SECRET_KEY')
 

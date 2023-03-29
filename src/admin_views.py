@@ -1,10 +1,8 @@
 from flask_admin.contrib.sqla import ModelView
 from flask_login import current_user
 from flask import abort
-from models import *
-from database_service import DatabaseService
-
-storage = DatabaseService()
+from app.models import *
+from app import storage
 
 
 def add_all_views(admin):

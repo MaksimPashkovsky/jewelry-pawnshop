@@ -1,10 +1,9 @@
 from operator import attrgetter
 from difflib import SequenceMatcher
 from flask import Blueprint, request, render_template, session, redirect, url_for
-from database_service import DatabaseService
+from . import storage
 
-catalog = Blueprint('catalog', __name__, template_folder='templates', static_folder='static')
-storage = DatabaseService()
+catalog = Blueprint('catalog', __name__, template_folder='templates/catalog', static_folder='static/catalog')
 
 
 @catalog.route('/<article_type>', methods=['GET', 'POST'])
@@ -18,7 +17,7 @@ def catalog_page(article_type):
     all_articles = list(filter(lambda x: x.quantity != 0, all_articles))
 
     if request.method == 'GET':
-        return render_template('catalog/catalog.html', article_type=article_type,
+        return render_template('catalog.html', article_type=article_type,
                                articles=sorted(all_articles, key=attrgetter('name')))
 
     search_string = request.form.get('search-string')
@@ -48,7 +47,7 @@ def catalog_page(article_type):
         field, order = sorting_option.split('-')
         sorted_articles = sorted(filtered_articles, key=attrgetter(field), reverse=order == 'desc')
 
-    return render_template('catalog/catalog.html', article_type=article_type, articles=sorted_articles,
+    return render_template('catalog.html', article_type=article_type, articles=sorted_articles,
                            sorting_option=sorting_option)
 
 
@@ -56,7 +55,7 @@ def catalog_page(article_type):
 def article_page(id):
     article = storage.get_article_by_id(id)
     num_of_purchases = len(storage.get_all_history_notes_by_article_id(id))
-    return render_template('catalog/article.html', article=article, num_of_purchases=num_of_purchases)
+    return render_template('article.html', article=article, num_of_purchases=num_of_purchases)
 
 
 @catalog.route('/clear-filters/<article_type>')
