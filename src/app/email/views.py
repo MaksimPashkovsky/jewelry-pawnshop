@@ -1,9 +1,6 @@
-from flask import Blueprint, session, url_for, flash, redirect, render_template
-from email_ import mail_service
-from database_service import DatabaseService
-
-email = Blueprint('email', __name__, template_folder='templates', static_folder='static')
-storage = DatabaseService()
+from flask import session, url_for, flash, redirect, render_template
+from . import email, mail_service
+from app import storage
 
 
 @email.route('/send')

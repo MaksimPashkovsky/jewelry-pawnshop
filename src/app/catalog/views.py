@@ -1,9 +1,8 @@
 from operator import attrgetter
 from difflib import SequenceMatcher
-from flask import Blueprint, request, render_template, session, redirect, url_for
-from . import storage
-
-catalog = Blueprint('catalog', __name__, template_folder='templates/catalog', static_folder='static/catalog')
+from flask import request, render_template, session, redirect, url_for
+from . import catalog
+from app import storage
 
 
 @catalog.route('/<article_type>', methods=['GET', 'POST'])

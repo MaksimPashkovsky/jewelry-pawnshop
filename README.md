@@ -1,1 +1,1 @@
-Deployed on https://uvelirka.herokuapp.com/
+~~Deployed on https://uvelirka.herokuapp.com/~~

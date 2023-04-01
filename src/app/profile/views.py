@@ -1,11 +1,9 @@
 from collections import defaultdict
-from flask import Blueprint, render_template, request
+from flask import render_template, request
 from flask_login import login_required, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
-from database_service import DatabaseService
-
-profile = Blueprint('profile', __name__, template_folder='templates/profile', static_folder='static/profile')
-storage = DatabaseService()
+from . import profile
+from app import storage
 
 
 @profile.route('/', methods=['GET'])

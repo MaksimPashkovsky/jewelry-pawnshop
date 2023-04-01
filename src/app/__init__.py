@@ -7,7 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from config import DatabaseConfig, AppConfig, UrlSafeTimeSerializerConfig, MailConfig, ToastrConfig
 
 db = SQLAlchemy()
-from database_service import DatabaseService
+from app.database_service import DatabaseService
 storage = DatabaseService(db)
 login_manager = LoginManager()
 admin = Admin()
@@ -40,6 +40,15 @@ def create_app():
         return dict(db=db)
 
     from .main import main as main_blueprint
+    from .cart import cart as cart_blueprint
+    from .catalog import catalog as catalog_blueprint
+    from .email import email as email_blueprint
+    from .profile import profile as profile_blueprint
+
     app.register_blueprint(main_blueprint)
+    app.register_blueprint(cart_blueprint, url_prefix='/cart')
+    app.register_blueprint(catalog_blueprint, url_prefix='/catalog')
+    app.register_blueprint(email_blueprint, url_prefix='/email')
+    app.register_blueprint(profile_blueprint, url_prefix='/profile')
 
     return app
