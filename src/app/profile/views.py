@@ -49,7 +49,7 @@ def change_password():
 @profile.route('/history', methods=['GET'])
 @login_required
 def history_page():
-    history_notes = storage.get_all_history_notes_by_user_id(current_user.user_id)
+    history_notes = current_user.history_notes
     d = [(note.date, note) for note in history_notes]
     res = defaultdict(list)
     for k, v in d:

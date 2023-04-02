@@ -8,6 +8,7 @@ from config import DatabaseConfig, AppConfig, UrlSafeTimeSerializerConfig, MailC
 
 db = SQLAlchemy()
 from app.database_service import DatabaseService
+from .models import *
 storage = DatabaseService(db)
 login_manager = LoginManager()
 admin = Admin()
@@ -37,7 +38,11 @@ def create_app():
 
     @app.shell_context_processor
     def make_shell_context():
-        return dict(db=db)
+        return dict(db=db, Article=Article, Condition=Condition)
+
+    @app.context_processor
+    def inject_types():
+        return dict(TYPES=storage.get_all_article_types())
 
     from .main import main as main_blueprint
     from .cart import cart as cart_blueprint

@@ -2,8 +2,7 @@ from flask_login import UserMixin
 from . import db
 
 __all__ = ['Account', 'Appraiser', 'Article', 'ArticleType',
-           'Auction', 'Condition', 'Customer', 'PassportInfo',
-           'SoldLot', 'User', 'CartNote', 'HistoryNote']
+           'Auction', 'Condition', 'Customer', 'PassportInfo', 'User', 'History']
 
 
 class Account(db.Model):
@@ -49,6 +48,24 @@ class Appraiser(Person, db.Model):
 
     def __repr__(self):
         return " ".join((self.surname, self.name))
+
+
+cart = db.Table('cart',
+                db.Column('user_id', db.Integer, db.ForeignKey('User.user_id'), primary_key=True),
+                db.Column('article_id', db.Integer, db.ForeignKey('Article.article_id'), primary_key=True))
+
+
+class History(db.Model):
+    __tablename__ = 'history'
+    user_id = db.Column(db.Integer, db.ForeignKey('User.user_id'), primary_key=True)
+    article_id = db.Column(db.Integer, db.ForeignKey('Article.article_id'), primary_key=True)
+    date = db.Column(db.Date)
+
+    user = db.relationship('User',
+                           backref=db.backref('history_notes', lazy='dynamic'))
+
+    article = db.relationship('Article',
+                              backref=db.backref('history_notes', lazy='dynamic'))
 
 
 class Article(db.Model):
@@ -100,6 +117,9 @@ class Condition(db.Model):
     condition_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
 
+    def __init__(self, name):
+        self.name = name
+
     def __repr__(self):
         return self.name
 
@@ -148,19 +168,6 @@ class PassportInfo(db.Model):
         return " ".join((self.surname, self.name, self.identification_number))
 
 
-class SoldLot(db.Model):
-    __tablename__ = 'SoldLot'
-
-    lot_id = db.Column(db.Integer, primary_key=True)
-    article_id = db.Column(db.Integer, db.ForeignKey("Article.article_id"))
-    auction_id = db.Column(db.Integer, db.ForeignKey("Auction.auction_id"))
-    user_id = db.Column(db.Integer, db.ForeignKey("User.user_id"))
-    status = db.Column(db.String)
-    timestamp = db.Column(db.TIMESTAMP)
-    start_sum = db.Column(db.Float)
-    final_sum = db.Column(db.Float)
-
-
 class User(db.Model, UserMixin):
     __tablename__ = 'User'
 
@@ -172,6 +179,11 @@ class User(db.Model, UserMixin):
     is_verified = db.Column(db.Boolean)
     account_id = db.Column(db.Integer, db.ForeignKey("Account.account_id"))
     account = db.relationship("Account", foreign_keys=[account_id])
+
+    articles_in_cart = db.relationship('Article',
+                                       secondary=cart,
+                                       backref=db.backref('users_have_in_cart', lazy='dynamic'),
+                                       lazy='dynamic')
 
     def __init__(self, login, password, email, reg_date, account_id, is_verified=False):
         self.login = login
@@ -188,29 +200,11 @@ class User(db.Model, UserMixin):
         return self.login
 
 
-class CartNote(db.Model):
-    __tablename__ = 'Cart'
-
-    cart_id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("User.user_id"))
-    article_id = db.Column(db.Integer, db.ForeignKey("Article.article_id"))
-    article = db.relationship("Article")
-
-    def __init__(self, user_id, article_id):
-        self.user_id = user_id
-        self.article_id = article_id
-
-
-class HistoryNote(db.Model):
-    __tablename__ = 'History'
-
-    history_id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("User.user_id"))
-    article_id = db.Column(db.Integer, db.ForeignKey("Article.article_id"))
-    article = db.relationship("Article")
-    date = db.Column(db.Date)
-
-    def __init__(self, user_id, article_id, date):
-        self.user_id = user_id
-        self.article_id = article_id
-        self.date = date
+sold_lot = db.Table('sold_lot',
+                    db.Column('article_id', db.Integer, db.ForeignKey(Article.article_id), primary_key=True),
+                    db.Column('auction_id', db.Integer, db.ForeignKey(Auction.auction_id), primary_key=True),
+                    db.Column('user_id', db.Integer, db.ForeignKey(User.user_id)),
+                    db.Column('status', db.String),
+                    db.Column('timestamp', db.TIMESTAMP),
+                    db.Column('start_sum', db.Float),
+                    db.Column('final_sum', db.Float))

@@ -41,7 +41,7 @@ def catalog_page(article_type):
     sorting_option = request.form.get('sorting')
 
     if sorting_option == 'num-of-purchased':
-        sorted_articles = sorted(filtered_articles, key=lambda x: len(storage.get_all_history_notes_by_article_id(x.article_id)), reverse=True)
+        sorted_articles = sorted(filtered_articles, key=lambda x: len(x.users_have_in_history), reverse=True)
     else:
         field, order = sorting_option.split('-')
         sorted_articles = sorted(filtered_articles, key=attrgetter(field), reverse=order == 'desc')
@@ -53,7 +53,7 @@ def catalog_page(article_type):
 @catalog.route('/article/<id>')
 def article_page(id):
     article = storage.get_article_by_id(id)
-    num_of_purchases = len(storage.get_all_history_notes_by_article_id(id))
+    num_of_purchases = len(article.users_have_in_history)
     return render_template('article.html', article=article, num_of_purchases=num_of_purchases)
 
 
