@@ -43,7 +43,9 @@
             <p>Articles in cart: {{ articles|length }}</p>
             <a class="text" style="text-decoration: underline" href="{{ url_for('cart.remove_all_from_cart') }}">Remove all</a>
             <p>Total price: ${{ articles|sum(attribute='estimated_price') }}</p>
-            <p style="text-align: center"><button {{ "hidden" if not articles }} onclick="confirm_purchase({{ current_user.account.balance }}, {{ articles|sum(attribute='estimated_price') }}, '{{ url_for('cart.confirm') }}', '{{ url_for('main_page') }}')">Confirm</button></p>
+            <p style="text-align: center">
+                <button {{ "hidden" if not articles }} onclick="confirm_purchase({{ current_user.account.balance }}, {{ articles|sum(attribute='estimated_price') }}, '{{ url_for('cart.confirm') }}', '{{ url_for('main.main_page') }}')">Confirm</button>
+            </p>
         </div>
     </div>
 {% endblock %}

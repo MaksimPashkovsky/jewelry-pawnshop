@@ -1,19 +1,23 @@
+from typing import List, Union
 from flask_login import UserMixin
-from . import db
+from sqlalchemy.orm import relationship, Mapped, mapped_column
+from app.db_setup import Base
+from sqlalchemy import Column, Integer, String, Numeric, Boolean, Date, ForeignKey, Table, TIMESTAMP, Float
 
 __all__ = ['Account', 'Appraiser', 'Article', 'ArticleType',
-           'Auction', 'Condition', 'Customer', 'PassportInfo', 'User', 'History']
+           'Auction', 'Condition', 'Customer', 'PassportInfo', 'User', 'History', 'SoldLot']
 
 
-class Account(db.Model):
+class Account(Base):
     __tablename__ = 'Account'
 
-    account_id = db.Column(db.Integer, primary_key=True)
-    bank = db.Column(db.String)
-    account_number = db.Column(db.String)
-    balance = db.Column(db.Numeric)
+    account_id = Column(Integer, primary_key=True)
 
-    def __init__(self, bank, account_number, balance=0):
+    bank = Column(String)
+    account_number = Column(String)
+    balance = Column(Numeric)
+
+    def __init__(self, bank: str, account_number: str, balance: float = 0):
         self.bank = bank
         self.account_number = account_number
         self.balance = balance
@@ -23,12 +27,13 @@ class Account(db.Model):
 
 
 class Person:
-    person_id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-    surname = db.Column(db.String)
-    phone_number = db.Column(db.String)
-    date_of_birth = db.Column(db.Date)
-    sex = db.Column(db.Boolean)
+    person_id = Column(Integer, primary_key=True)
+
+    name = Column(String)
+    surname = Column(String)
+    phone_number = Column(String)
+    date_of_birth = Column(Date)
+    sex = Column(Boolean)
 
     def __init__(self, name=None, surname=None, phone_number=None, date_of_birth=None, sex=None):
         self.name = name
@@ -38,84 +43,76 @@ class Person:
         self.sex = sex
 
 
-class Appraiser(Person, db.Model):
+class Appraiser(Person, Base):
     __tablename__ = 'Appraiser'
 
-    # position = db.Column(db.String)
-    salary = db.Column(db.Numeric)
-    employment_date = db.Column(db.Date)
-    user_id = db.Column(db.Integer, db.ForeignKey("User.user_id"))
+    user_id = Column(Integer, ForeignKey("User.user_id"))
+
+    salary = Column(Float)
+    employment_date = Column(Date)
+
+    user: Mapped['User'] = relationship(back_populates='appraiser')
 
     def __repr__(self):
         return " ".join((self.surname, self.name))
 
 
-cart = db.Table('cart',
-                db.Column('user_id', db.Integer, db.ForeignKey('User.user_id'), primary_key=True),
-                db.Column('article_id', db.Integer, db.ForeignKey('Article.article_id'), primary_key=True))
+cart = Table('cart',
+             Base.metadata,
+             Column('user_id', Integer, ForeignKey('User.user_id'), primary_key=True),
+             Column('article_id', Integer, ForeignKey('Article.article_id'), primary_key=True))
 
 
-class History(db.Model):
+class History(Base):
     __tablename__ = 'history'
-    user_id = db.Column(db.Integer, db.ForeignKey('User.user_id'), primary_key=True)
-    article_id = db.Column(db.Integer, db.ForeignKey('Article.article_id'), primary_key=True)
-    date = db.Column(db.Date)
 
-    user = db.relationship('User',
-                           backref=db.backref('history_notes', lazy='dynamic'))
+    user_id: Mapped[int] = mapped_column(ForeignKey('User.user_id'), primary_key=True)
+    article_id: Mapped[int] = mapped_column(ForeignKey('Article.article_id'), primary_key=True)
 
-    article = db.relationship('Article',
-                              backref=db.backref('history_notes', lazy='dynamic'))
+    date = Column(Date)
+
+    user: Mapped['User'] = relationship(back_populates='articles_in_history')
+    article: Mapped['Article'] = relationship(back_populates='users_have_in_history')
 
 
-class Article(db.Model):
+class Article(Base):
     __tablename__ = 'Article'
 
-    article_id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-    condition_id = db.Column(db.Integer, db.ForeignKey('Condition.condition_id'))
-    condition = db.relationship("Condition")
-    weight = db.Column(db.Numeric)
-    estimated_price = db.Column(db.Numeric)
-    receipt_date = db.Column(db.Date)
-    expiry_date = db.Column(db.Date)
-    appraiser_id = db.Column(db.Integer, db.ForeignKey('Appraiser.person_id'))
-    appraiser = db.relationship("Appraiser")
-    customer_id = db.Column(db.Integer, db.ForeignKey('Customer.person_id'))
-    customer = db.relationship("Customer")
-    type_id = db.Column(db.Integer, db.ForeignKey("ArticleType.type_id"))
-    type = db.relationship("ArticleType")
-    quantity = db.Column(db.Integer)
-    image = db.Column(db.String)
-    for_sale = db.Column(db.Boolean)
+    article_id = Column(Integer, primary_key=True)
+
+    condition_id = Column(Integer, ForeignKey('Condition.condition_id'))
+    appraiser_id = Column(Integer, ForeignKey('Appraiser.person_id'))
+    customer_id = Column(Integer, ForeignKey('Customer.person_id'))
+    type_id = Column(Integer, ForeignKey("ArticleType.type_id"))
+
+    name = Column(String)
+    weight = Column(Numeric)
+    estimated_price = Column(Numeric)
+    receipt_date = Column(Date)
+    expiry_date = Column(Date)
+    quantity = Column(Integer)
+    image = Column(String)
+    for_sale = Column(Boolean)
+
+    type = relationship("ArticleType")
+    condition = relationship("Condition")
+    appraiser = relationship("Appraiser")
+    customer = relationship("Customer")
+
+    users_have_in_cart: Mapped[List['User']] = relationship(secondary=cart, back_populates='articles_in_cart')
+    users_have_in_history: Mapped[List['History']] = relationship(back_populates='article')
+    users_have_in_sold_lots: Mapped[List['SoldLot']] = relationship(back_populates='article')
 
     def __repr__(self):
         return "{}, ${}".format(self.name, self.estimated_price)
 
 
-class ArticleType(db.Model):
+class ArticleType(Base):
     __tablename__ = 'ArticleType'
 
-    type_id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
+    type_id = Column(Integer, primary_key=True)
 
-    def __repr__(self):
-        return self.name
-
-
-class Auction(db.Model):
-    __tablename__ = 'Auction'
-
-    auction_id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.Date)
-    name = db.Column(db.String)
-
-
-class Condition(db.Model):
-    __tablename__ = 'Condition'
-
-    condition_id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
+    name = Column(String)
 
     def __init__(self, name):
         self.name = name
@@ -124,14 +121,39 @@ class Condition(db.Model):
         return self.name
 
 
-class Customer(Person, db.Model):
+class Auction(Base):
+    __tablename__ = 'Auction'
+
+    auction_id = Column(Integer, primary_key=True)
+
+    date = Column(Date)
+    name = Column(String)
+
+
+class Condition(Base):
+    __tablename__ = 'Condition'
+
+    condition_id = Column(Integer, primary_key=True)
+
+    name = Column(String)
+
+    def __init__(self, name):
+        self.name = name
+
+    def __repr__(self):
+        return self.name
+
+
+class Customer(Person, Base):
     __tablename__ = 'Customer'
 
-    discount = db.Column(db.Numeric)
-    passport_id = db.Column(db.Integer, db.ForeignKey('PassportInfo.passport_id'))
-    passport_object = db.relationship('PassportInfo')
-    user_id = db.Column(db.Integer, db.ForeignKey("User.user_id"))
-    user = db.relationship("User")
+    passport_id = Column(Integer, ForeignKey('PassportInfo.passport_id'))
+    user_id = Column(Integer, ForeignKey("User.user_id"))
+
+    discount = Column(Numeric)
+
+    passport_object = relationship('PassportInfo')
+    user: Mapped['User'] = relationship(back_populates='customer')
 
     def __init__(self, user_id, discount=0):
         Person.__init__(self)
@@ -146,44 +168,55 @@ class Customer(Person, db.Model):
         return string
 
 
-class PassportInfo(db.Model):
+class PassportInfo(Base):
     __tablename__ = 'PassportInfo'
 
-    passport_id = db.Column(db.Integer, primary_key=True)
-    type = db.Column(db.String)
-    code_of_issuing_state = db.Column(db.String)
-    passport_number = db.Column(db.String)
-    surname = db.Column(db.String)
-    name = db.Column(db.String)
-    nationality = db.Column(db.String)
-    date_of_birth = db.Column(db.Date)
-    identification_number = db.Column(db.String)
-    sex = db.Column(db.Boolean)
-    place_of_birth = db.Column(db.String)
-    date_of_issue = db.Column(db.Date)
-    date_of_expiry = db.Column(db.Date)
-    authority = db.Column(db.String)
+    passport_id = Column(Integer, primary_key=True)
+
+    type = Column(String)
+    code_of_issuing_state = Column(String)
+    passport_number = Column(String)
+    surname = Column(String)
+    name = Column(String)
+    nationality = Column(String)
+    date_of_birth = Column(Date)
+    identification_number = Column(String)
+    sex = Column(Boolean)
+    place_of_birth = Column(String)
+    date_of_issue = Column(Date)
+    date_of_expiry = Column(Date)
+    authority = Column(String)
 
     def __repr__(self):
         return " ".join((self.surname, self.name, self.identification_number))
 
 
-class User(db.Model, UserMixin):
+class User(UserMixin, Base):
     __tablename__ = 'User'
 
-    user_id = db.Column(db.Integer, primary_key=True)
-    login = db.Column(db.String, unique=True)
-    password = db.Column(db.String)
-    email = db.Column(db.String, unique=True)
-    registration_date = db.Column(db.Date)
-    is_verified = db.Column(db.Boolean)
-    account_id = db.Column(db.Integer, db.ForeignKey("Account.account_id"))
-    account = db.relationship("Account", foreign_keys=[account_id])
+    user_id = Column(Integer, primary_key=True)
 
-    articles_in_cart = db.relationship('Article',
-                                       secondary=cart,
-                                       backref=db.backref('users_have_in_cart', lazy='dynamic'),
-                                       lazy='dynamic')
+    account_id = Column(Integer, ForeignKey("Account.account_id"))
+
+    login = Column(String, unique=True)
+    password = Column(String)
+    email = Column(String, unique=True)
+    registration_date = Column(Date)
+    is_verified = Column(Boolean)
+
+    account = relationship("Account", foreign_keys=[account_id])
+    appraiser: Mapped['Appraiser'] = relationship(back_populates='user')
+    customer: Mapped['Customer'] = relationship(back_populates='user')
+    articles_in_cart: Mapped[List[Article]] = relationship(secondary=cart, back_populates='users_have_in_cart')
+    articles_in_history: Mapped[List['History']] = relationship(back_populates='user')
+    articles_in_sold_lots: Mapped[List['SoldLot']] = relationship(back_populates='user')
+
+    def get_id(self):
+        return self.user_id
+
+    @property
+    def is_admin(self):
+        return self.appraiser is not None
 
     def __init__(self, login, password, email, reg_date, account_id, is_verified=False):
         self.login = login
@@ -193,18 +226,22 @@ class User(db.Model, UserMixin):
         self.account_id = account_id
         self.is_verified = is_verified
 
-    def get_id(self):
-        return self.user_id
-
     def __repr__(self):
         return self.login
 
 
-sold_lot = db.Table('sold_lot',
-                    db.Column('article_id', db.Integer, db.ForeignKey(Article.article_id), primary_key=True),
-                    db.Column('auction_id', db.Integer, db.ForeignKey(Auction.auction_id), primary_key=True),
-                    db.Column('user_id', db.Integer, db.ForeignKey(User.user_id)),
-                    db.Column('status', db.String),
-                    db.Column('timestamp', db.TIMESTAMP),
-                    db.Column('start_sum', db.Float),
-                    db.Column('final_sum', db.Float))
+class SoldLot(Base):
+    __tablename__ = 'SoldLot'
+
+    lot_id = Column(Integer, primary_key=True)
+    auction_id = Column(Integer, ForeignKey('Auction.auction_id'))
+    article_id = Column(Integer, ForeignKey('Article.article_id'))
+    user_id = Column(Integer, ForeignKey('User.user_id'))
+
+    status = Column(String)
+    timestamp = Column(TIMESTAMP)
+    start_sum = Column(Float)
+    final_sum = Column(Float)
+
+    article: Mapped[Article] = relationship(back_populates='users_have_in_sold_lots')
+    user: Mapped[User] = relationship(back_populates='articles_in_sold_lots')

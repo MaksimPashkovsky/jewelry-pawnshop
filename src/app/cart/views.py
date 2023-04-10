@@ -71,7 +71,7 @@ def confirm():
     cheque_body += f'{date} you bought {len(articles_in_cart)} items, total amount: ${total_sum}\n'
     cheque_body += f'Items:\n'
     cheque_body += articles + '\n\n'
-    cheque_body += url_for('main_page', _external=True) + '\n'
+    cheque_body += url_for('main.main_page', _external=True) + '\n'
     cheque_body += 'Thank you!'
 
     user = storage.get_user_by_id(current_user.user_id)

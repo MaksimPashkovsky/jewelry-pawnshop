@@ -1,15 +1,15 @@
 from flask import Flask
-from flask_login import LoginManager
+from flask_login import LoginManager, current_user
 from flask_toastr import Toastr
 from flask_admin import Admin
 from flask_mail import Mail
-from flask_sqlalchemy import SQLAlchemy
-from config import DatabaseConfig, AppConfig, UrlSafeTimeSerializerConfig, MailConfig, ToastrConfig
-
-db = SQLAlchemy()
+from config import AppConfig, UrlSafeTimeSerializerConfig, MailConfig, ToastrConfig
 from app.database_service import DatabaseService
 from .models import *
-storage = DatabaseService(db)
+from .db_setup import Base, engine
+from app.admin_views import add_all_views
+
+storage = DatabaseService()
 login_manager = LoginManager()
 admin = Admin()
 toastr = Toastr()
@@ -24,13 +24,11 @@ def load_user(user_id):
 def create_app():
     app = Flask(__name__)
 
-    app.config.from_object(DatabaseConfig)
     app.config.from_object(AppConfig)
     app.config.from_object(UrlSafeTimeSerializerConfig)
     app.config.from_object(MailConfig)
     app.config.from_object(ToastrConfig)
 
-    db.init_app(app)
     login_manager.init_app(app)
     admin.init_app(app)
     toastr.init_app(app)
@@ -38,7 +36,7 @@ def create_app():
 
     @app.shell_context_processor
     def make_shell_context():
-        return dict(db=db, Article=Article, Condition=Condition)
+        return dict(Base=Base, engine=engine, Account=Account, User=User, Article=Article, History=History)
 
     @app.context_processor
     def inject_types():
@@ -55,5 +53,7 @@ def create_app():
     app.register_blueprint(catalog_blueprint, url_prefix='/catalog')
     app.register_blueprint(email_blueprint, url_prefix='/email')
     app.register_blueprint(profile_blueprint, url_prefix='/profile')
+
+    add_all_views(admin)
 
     return app

@@ -1,9 +1,10 @@
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from flask_mail import Message
 from config import UrlSafeTimeSerializerConfig
+from .. import mail
+
 
 url_safe_timed_serializer = URLSafeTimedSerializer(UrlSafeTimeSerializerConfig.URL_SAFE_TIMED_SERIALIZER_SECRET_KEY)
-mail = None
 
 
 def generate_token(email):

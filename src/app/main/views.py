@@ -11,8 +11,7 @@ from app.models import User, Account, Customer
 @main.route('/')
 def main_page():
     all_articles = storage.get_all_articles()
-    #random_articles = random.sample(all_articles, 3)
-    random_articles = []
+    random_articles = random.sample(all_articles, 3)
     return render_template('main_page.html', random_articles=random_articles)
 
 
@@ -28,12 +27,12 @@ def login_page():
 
     if user is None:
         flash('User not found!', 'error')
-        return redirect(url_for('login_page'))
+        return redirect(url_for('main.login_page'))
 
     if check_password_hash(user.password, password):
         if not user.is_verified:
             flash('Account is not verified. Check your email', 'warning')
-            return redirect(url_for('login_page'))
+            return redirect(url_for('main.login_page'))
 
         login_user(user)
         next_page = request.form.get('next')
@@ -44,9 +43,9 @@ def login_page():
         if next_page:
             return redirect(next_page)
 
-        return redirect(url_for('main_page'))
+        return redirect(url_for('main.main_page'))
     flash('Wrong password!', 'error')
-    return redirect(url_for('login_page'))
+    return redirect(url_for('main.login_page'))
 
 
 @main.route('/register', methods=['GET', 'POST'])
@@ -61,11 +60,11 @@ def register_page():
 
     if login in storage.get_all_logins():
         flash('Such login already in use!', 'error')
-        return redirect(url_for('register_page'))
+        return redirect(url_for('main.register_page'))
 
     if email in storage.get_all_emails():
         flash('Such email already in use!', 'error')
-        return redirect(url_for('register_page'))
+        return redirect(url_for('main.register_page'))
 
     session['email'] = email
 
@@ -87,11 +86,11 @@ def register_page():
 def logout_page():
     logout_user()
     session.clear()
-    return redirect(url_for('main_page'))
+    return redirect(url_for('main.main_page'))
 
 
 @main.after_request
 def redirect_to_sign_in(response):
     if response.status_code == 401:
-        return redirect(url_for('login_page') + '?next=' + request.url)
+        return redirect(url_for('main.login_page') + '?next=' + request.url)
     return response

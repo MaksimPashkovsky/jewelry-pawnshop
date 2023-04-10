@@ -14,7 +14,7 @@
 <body>
     {% if success %}
         <h1>Account successfully verified!</h1>
-        <a href="{{ url_for('login_page') }}">Go to login page</a>
+        <a href="{{ url_for('main.login_page') }}">Go to login page</a>
     {% else %}
         <h1>Your token expired :(</h1>
         <a href="{{ url_for('email.send_email') }}">Send again</a>

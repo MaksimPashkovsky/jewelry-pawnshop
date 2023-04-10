@@ -1,11 +1,11 @@
 from app.models import *
+from app.db_setup import session
 
 
 class DatabaseService:
 
-    def __init__(self, db):
-        self.db = db
-        self.session = db.session
+    def __init__(self):
+        self.session = session
 
     def get_all_article_types(self):
         return self.session.query(ArticleType).all()

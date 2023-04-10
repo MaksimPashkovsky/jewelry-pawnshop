@@ -6,7 +6,8 @@ class Config:
 
 
 class DatabaseConfig(Config):
-    SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:password@localhost:5432/pawnshop-db'
+    SQLALCHEMY_DATABASE_URI = f"{config('DB_DRIVER')}://{config('DB_USERNAME')}:" \
+                              f"{config('DB_PASSWORD')}@{config('DB_HOST')}:{config('DB_PORT')}/{config('DB_NAME')}"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
