@@ -6,6 +6,7 @@
 
 {% block links %}
     <link rel="stylesheet" href="{{ url_for('catalog.static', filename='styles/catalog.css') }}">
+
 {% endblock %}
 
 {% block script %}
@@ -16,6 +17,7 @@
         const sorting_option = "{{ sorting_option }}";
         document.querySelector('#sorting-options').value = sorting_option !== "" ? sorting_option : 'name-asc'
     </script>
+
 {% endblock %}
 
 {% block main %}
@@ -52,28 +54,23 @@
                 <div style="text-align: center"><button type="submit">Apply</button></div>
             </form>
         </div>
-        <div class="catalog-wrap">
+        <div class="row row-cols-4">
             {% if articles %}
                 {% for article in articles %}
-                    <article class="catalog-item">
-                        <div class="catalog-item-image">
+                    <div class="col">
+                        <div class="card">
                             <a href={{ url_for('catalog.article_page', id=article.article_id) }}>
-                                <img src="{{ url_for('static', filename='images/') + article.image if article.image else "no-image.png" }}" alt="#" height="200" width="230">
+                                <img class="card-img-top" src="{{ url_for('static', filename='images/') + article.image if article.image else "no-image.png" }}" alt="#" height="200" width="230">
                             </a>
+                            <div class="card-body">
+                                <h5 class="card-title">{{ article.name }}</h5>
+                                <p class="card-text">Price: ${{ article.estimated_price }}</p>
+                            </div>
+                            <div class="card-footer">
+                                <small class="text-muted">Last updated 3 mins ago</small>
+                            </div>
                         </div>
-                        <div class="catalog-item-info">
-                            <p style="text-align: center"><b>{{ article.name }}</b></p>
-                            <p>Price: ${{ article.estimated_price }}</p>
-                            <p>Quantity: {{ article.quantity }}</p>
-                        </div>
-                        <div style="text-align: right">
-                            {% if current_user.is_authenticated %}
-                                <button {{ "disabled" if article.quantity == 0 }} onclick="add_to_cart({{ article.article_id }}, '{{ url_for('cart.add_to_cart') }}')">Add to cart</button>
-                            {% else %}
-                                <button {{ "disabled" if article.quantity == 0 }} onclick="toastr.error('Sign in your account first!')">Add to cart</button>
-                            {% endif %}
-                        </div>
-                    </article>
+                    </div>
                 {% endfor %}
             {% else %}
                 <p>No articles found...</p>
