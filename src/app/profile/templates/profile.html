@@ -6,13 +6,11 @@
 
 {% block links %}
     <link rel="stylesheet" href="{{ url_for('profile.static', filename='styles/profile.css') }}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
 {% endblock %}
 
 {% block script %}
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
     <script src="{{ url_for('profile.static', filename='js/save_profile_info.js') }}"></script>
     <script>
         toastr.options.positionClass = "toast-top-center";
@@ -25,38 +23,66 @@
 {% endblock %}
 
 {% block main %}
-    <div class="profile-content">
-        <div class="personal-info">
+    <div class="container">
+        <div class="row">
             <h2>Personal info</h2>
-            <div class="profile-item">
-                <label>Login</label>
-                <input type="text" value="{{ current_user.login }}" id="login">
-                <button onclick="save_login('{{ url_for('profile.save_profile_info') }}', '{{ current_user.login }}')">Save</button>
+            <div class="col-3 mt-3">
+                <label for="login" class="form-label">Login</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="login" value="{{ current_user.login }}">
+                    <button class="btn btn-outline-secondary"
+                            onclick="save_login('{{ url_for('profile.save_profile_info') }}', '{{ current_user.login }}')">
+                        Save
+                    </button>
+                </div>
             </div>
-            <div class="profile-item">
-                <label>Old password</label>
-                <input type="password" id="old-password">
+            <div class="col-9"></div>
+            <div class="col-3 mt-3">
+                <label for="old-password" class="form-label">Old password</label>
+                <input type="password" class="form-control" id="old-password">
             </div>
-            <div class="profile-item">
-                <label>New password</label>
-                <input type="password" id="new-password">
-                <button onclick="change_password('{{ url_for('profile.change_password') }}')">Change password</button>
+            <div class="col-5 mt-3">
+                <label for="new-password" class="form-label">New password</label>
+                <div class="input-group">
+                    <input type="password" class="form-control" id="new-password">
+                    <button class="btn btn-outline-secondary"
+                            onclick="change_password('{{ url_for('profile.change_password') }}')">
+                        Change password
+                    </button>
+                </div>
             </div>
-            <div class="profile-item">
-                <label>Email</label>
-                <input type="email" value="{{ current_user.email }}" id="email">
-                <button onclick="save_email('{{ url_for('profile.save_profile_info') }}', '{{ current_user.email }}')">Save</button>
+            <div class="col-4"></div>
+            <div class="col-4 mt-3">
+                <label for="email" class="form-label">Email</label>
+                <div class="input-group">
+                    <input type="email" class="form-control" id="email" value="{{ current_user.email }}">
+                    <button class="btn btn-outline-secondary"
+                            onclick="save_email('{{ url_for('profile.save_profile_info') }}', '{{ current_user.email }}')">
+                        Save
+                    </button>
+                </div>
             </div>
-            <div class="profile-item">
-                <label>Balance</label>
-                <input value="{{ current_user.account.balance }}" readonly id="balance">
-                <button onclick="top_up()">Top up</button>
+            <div class="col-8"></div>
+            <div class="col-2 mt-3">
+                <label for="balance" class="form-label">Balance</label>
+                <div class="input-group">
+                    <input class="form-control" id="balance" value="{{ current_user.account.balance }}" readonly>
+                    <button class="btn btn-outline-secondary"
+                            onclick="top_up()">Top up
+                    </button>
+                </div>
             </div>
         </div>
-        <h4><a class="text" style="text-decoration: underline" href="{{ url_for('profile.history_page') }}">My purchase history</a></h4>
+        <h2 class="my-5"><a class="text" style="text-decoration: underline" href="{{ url_for('profile.history_page') }}">My purchase
+            history</a></h2>
+    </div>
+
+
+    <div>
 
         <!-- Modal window -->
-        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -91,7 +117,9 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" onclick="save_balance('{{ url_for('profile.save_profile_info') }}')">Top up</button>
+                        <button type="button" class="btn btn-primary"
+                                onclick="save_balance('{{ url_for('profile.save_profile_info') }}')">Top up
+                        </button>
                     </div>
                 </div>
             </div>

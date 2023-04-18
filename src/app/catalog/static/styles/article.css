@@ -14,32 +14,3 @@
   position: absolute;
   right: 0;
 }
-
-/*
-.article {
-    display: flex;
-}
-
-.article-image {
-    width: 50%;
-    display: flex;
-    justify-content: center;
-}
-
-.article-description {
-    width: 50%;
-    background-color: #adadad;
-}
-
-.article-description * {
-    margin-left: 10px;
-}
-
-.article-description button {
-    border-radius: 10px;
-    border-width: thin;
-    font-family: 'century gothic', monospace;
-    font-size: 16px;
-    background-color: deepskyblue;
-    cursor: pointer;
-}*/
