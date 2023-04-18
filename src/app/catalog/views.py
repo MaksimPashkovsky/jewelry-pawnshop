@@ -1,6 +1,4 @@
-import sys
 from operator import attrgetter
-from difflib import SequenceMatcher
 from flask import request, render_template, session, redirect, url_for
 from . import catalog
 from app import storage
@@ -24,24 +22,10 @@ def catalog_page():
             articles.extend(storage.get_article_type_by_name(a_type.capitalize()).articles)
             session['match-' + a_type] = 'checked'
 
-    # search_string = request.form.get('search-string')
-
-    # if search_string:
-    #     all_articles = list(filter(lambda x: SequenceMatcher(None, search_string, x.name).ratio() >= 0.3, all_articles))
-
     price_start = request.form.get('price-start')
     price_end = request.form.get('price-end')
 
-    # if price_start == '' and all_articles:
-    #     price_start = min(all_articles, key=attrgetter('estimated_price')).estimated_price
-
-    # if price_end == '' and all_articles:
-    #     price_end = max(all_articles, key=attrgetter('estimated_price')).estimated_price
-
     filtered_articles = list(filter(lambda x: float(price_start) <= x.estimated_price <= float(price_end), articles))
-
-    #session['price_start'] = price_start
-    #session['price_end'] = price_end
 
     #sorting_option = request.form.get('sorting')
 
@@ -52,7 +36,6 @@ def catalog_page():
     #    sorted_articles = sorted(filtered_articles, key=attrgetter(field), reverse=order == 'desc')
 
     return render_template('catalog.html', articles=filtered_articles)
-
 
 
 @catalog.route('/article/<id>')

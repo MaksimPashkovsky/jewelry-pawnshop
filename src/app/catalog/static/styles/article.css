@@ -1,3 +1,21 @@
+.loupe {
+  display: none;
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border: 1px solid black;
+  box-shadow: 5px 5px 12px black;
+  background: rgba(0, 0, 0, 0.25);
+  cursor: none;
+  overflow: hidden;
+}
+
+.loupe img {
+  position: absolute;
+  right: 0;
+}
+
+/*
 .article {
     display: flex;
 }
@@ -24,4 +42,4 @@
     font-size: 16px;
     background-color: deepskyblue;
     cursor: pointer;
-}
+}*/

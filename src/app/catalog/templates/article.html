@@ -10,6 +10,7 @@
 
 {% block script %}
     <script src="{{ url_for('catalog.static', filename='js/add_to_cart.js') }}"></script>
+    <script src="{{ url_for('catalog.static', filename='js/loupe.js') }}"></script>
     <script>
         toastr.options.positionClass = "toast-bottom-right";
         toastr.options.timeOut = 1500;
@@ -17,21 +18,36 @@
 {% endblock %}
 
 {% block main %}
-    <div class="article">
-        <div class="article-image">
-            <img src="{{ url_for('static', filename='images/' + (article.image if article.image else "no-image.png")) }}" alt="#">
+    <div class="container">
+        <div class="row">
+            <div class="col-7">
+                <div class="image">
+                    <img width="100%" height="auto"
+                         src="{{ url_for('static', filename='images/' + (article.image if article.image else "no-image.png")) }}"
+                         alt="#">
+                </div>
+            </div>
+            <div class="loupe"></div>
+            <div class="col-5 border border-secondary rounded">
+                <h2 class="text-center my-3">Details:</h2>
+                <hr class="featurette-divider my-2">
+                <p><strong>Name:</strong> {{ article.name }}</p>
+                <p><strong>Type:</strong> {{ article.type.name }}</p>
+                <p><strong>Condition:</strong> {{ article.condition }}</p>
+                <p><strong>Price:</strong> ${{ article.estimated_price }}</p>
+                {% if current_user.is_authenticated %}
+                    <button {{ "disabled" if article.quantity == 0 }}
+                            onclick="add_to_cart({{ article.article_id }}, '{{ url_for('cart.add_to_cart') }}')">Add to
+                        cart
+                    </button>
+                {% else %}
+                    <button {{ "disabled" if article.quantity == 0 }}
+                            onclick="toastr.error('Sign in your account first!')">
+                        Add to cart
+                    </button>
+                {% endif %}
+            </div>
         </div>
-        <div class="article-description">
-            <h2>Description:</h2>
-            <p>Name: {{ article.name }}</p>
-            <p>Type: {{ article.type.name }}</p>
-            <p>Price: ${{ article.estimated_price }}</p>
-            <p>Quantity: {{ article.quantity }}</p>
-            {% if current_user.is_authenticated %}
-                <button {{ "disabled" if article.quantity == 0 }} onclick="add_to_cart({{ article.article_id }}, '{{ url_for('cart.add_to_cart') }}')">Add to cart</button>
-            {% else %}
-                <button {{ "disabled" if article.quantity == 0 }} onclick="toastr.error('Sign in your account first!')">Add to cart</button>
-            {% endif %}
-        </div>
+
     </div>
 {% endblock %}
