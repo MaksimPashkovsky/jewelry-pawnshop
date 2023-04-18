@@ -94,7 +94,7 @@ class Article(Base):
     image = Column(String)
     for_sale = Column(Boolean)
 
-    type = relationship("ArticleType")
+    type: Mapped['ArticleType'] = relationship(back_populates='articles')
     condition = relationship("Condition")
     appraiser = relationship("Appraiser")
     customer = relationship("Customer")
@@ -113,6 +113,8 @@ class ArticleType(Base):
     type_id = Column(Integer, primary_key=True)
 
     name = Column(String)
+
+    articles: Mapped[List['Article']] = relationship(back_populates='type')
 
     def __init__(self, name):
         self.name = name

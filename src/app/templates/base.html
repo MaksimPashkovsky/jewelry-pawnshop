@@ -48,15 +48,19 @@
                             </ul>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Shop</a>
+                            <a class="nav-link" href="{{ url_for('catalog.catalog_page') }}">Shop</a>
                         </li>
                     </ul>
                     <form role="search">
                         {% if current_user.is_authenticated %}
-                            <p><a href="{{ url_for('profile.profile_page') }}" class="text">{{ current_user.login }}
-                                (${{ current_user.account.balance }})</a></p>
-                            <p><a href="{{ url_for('cart.cart_page') }}" class="text">Cart</a></p>
-
+                            <a href="{{ url_for('profile.profile_page') }}" class="text">
+                                <button type="button"
+                                        class="btn btn-light border">{{ current_user.login }}(${{ current_user.account.balance }})
+                                </button>
+                            </a>
+                            <a href="{{ url_for('cart.cart_page') }}" class="text">
+                                <button type="button" class="btn btn-light border">Cart</button>
+                            </a>
                             <a class="text" href="{{ url_for('main.logout_page') }}">
                                 <button type="button" class="btn btn-dark">Sign out</button>
                             </a>
