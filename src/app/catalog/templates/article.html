@@ -31,12 +31,12 @@
             <div class="col-5 border border-secondary rounded">
                 <h2 class="text-center my-3">Details:</h2>
                 <hr class="featurette-divider my-2">
-                <p><strong>Name:</strong> {{ article.name }}</p>
-                <p><strong>Type:</strong> {{ article.type.name }}</p>
-                <p><strong>Condition:</strong> {{ article.condition }}</p>
-                <p><strong>Price:</strong> ${{ article.estimated_price }}</p>
+                <h4 class="mt-4"><strong>Name:</strong> {{ article.name }}</h4>
+                <h4 class="mt-4"><strong>Type:</strong> {{ article.type.name }}</h4>
+                <h4 class="mt-4"><strong>Condition:</strong> {{ article.condition }}</h4>
+                <h4 class="mt-4"><strong>Price:</strong> ${{ article.estimated_price }}</h4>
                 {% if current_user.is_authenticated %}
-                    <button {{ "disabled" if article.quantity == 0 }}
+                    <button type="button" class="btn btn-warning mt-4" {{ "disabled" if article.quantity == 0 }}
                             onclick="add_to_cart({{ article.article_id }}, '{{ url_for('cart.add_to_cart') }}')">Add to
                         cart
                     </button>

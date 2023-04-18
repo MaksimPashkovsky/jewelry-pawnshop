@@ -1,3 +1,4 @@
+import sys
 from datetime import datetime
 from collections import Counter
 from flask import render_template, flash, request, redirect, url_for
@@ -22,6 +23,7 @@ def add_to_cart():
     id = data['id']
     article = storage.get_article_by_id(id)
     current_user.articles_in_cart.append(article)
+    storage.session.commit()
     return '', 204
 
 
@@ -30,6 +32,7 @@ def add_to_cart():
 def remove_from_cart(id):
     article = storage.get_article_by_id(id)
     current_user.articles_in_cart.remove(article)
+    storage.session.commit()
     flash('Removed from cart')
     return redirect(url_for('.cart_page'))
 
@@ -38,6 +41,7 @@ def remove_from_cart(id):
 @login_required
 def remove_all_from_cart():
     current_user.articles_in_cart.clear()
+    storage.session.commit()
     flash('Removed all')
     return redirect(url_for('.cart_page'))
 
