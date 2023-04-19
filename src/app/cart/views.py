@@ -67,9 +67,10 @@ def confirm():
         articles += str(item) + '\n'
         h = History(date=date)
         h.article = item
-        current_user.history_notes.append(h)
+        current_user.articles_in_history.append(h)
         storage.save(item)
         current_user.articles_in_cart.remove(item)
+        storage.session.commit()
 
     cheque_body = 'UVELIRKA JEWELRY PAWNSHOP\n\n'
     cheque_body += f'{date} you bought {len(articles_in_cart)} items, total amount: ${total_sum}\n'
