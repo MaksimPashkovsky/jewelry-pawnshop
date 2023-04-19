@@ -90,7 +90,6 @@ class Article(Base):
     estimated_price = Column(Numeric)
     receipt_date = Column(Date)
     expiry_date = Column(Date)
-    quantity = Column(Integer)
     image = Column(String)
     for_sale = Column(Boolean)
 

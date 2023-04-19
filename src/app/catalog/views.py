@@ -11,8 +11,7 @@ def catalog_page():
         session['match-' + a_type] = ''
 
     if request.method == 'GET':
-        all_articles = storage.get_all_articles()
-        all_articles = list(filter(lambda x: x.quantity != 0, all_articles))
+        all_articles = storage.get_all_articles_for_sale()
         return render_template('catalog.html', articles=sorted(all_articles, key=attrgetter('name')))
 
     articles = list()

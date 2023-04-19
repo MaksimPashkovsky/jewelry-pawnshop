@@ -54,20 +54,15 @@ def confirm():
     articles = ''
     articles_in_cart = current_user.articles_in_cart
 
-    quantities = Counter([a.article_id for a in articles_in_cart])
-
-    for k, v in quantities.items():
-        article = storage.get_article_by_id(k)
-        if article.quantity < v:
-            return '', 500
-
     for item in articles_in_cart:
         total_sum += item.estimated_price
-        item.quantity -= 1
         articles += str(item) + '\n'
+
         h = History(date=date)
         h.article = item
         current_user.articles_in_history.append(h)
+
+        item.for_sale = False
         storage.save(item)
         current_user.articles_in_cart.remove(item)
         storage.session.commit()

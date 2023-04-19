@@ -36,12 +36,12 @@
                 <h4 class="mt-4"><strong>Condition:</strong> {{ article.condition }}</h4>
                 <h4 class="mt-4"><strong>Price:</strong> ${{ article.estimated_price }}</h4>
                 {% if current_user.is_authenticated %}
-                    <button type="button" class="btn btn-warning mt-4" {{ "disabled" if article.quantity == 0 }}
+                    <button type="button" class="btn btn-warning mt-4"
                             onclick="add_to_cart({{ article.article_id }}, '{{ url_for('cart.add_to_cart') }}')">Add to
                         cart
                     </button>
                 {% else %}
-                    <button {{ "disabled" if article.quantity == 0 }}
+                    <button
                             onclick="toastr.error('Sign in your account first!')">
                         Add to cart
                     </button>
