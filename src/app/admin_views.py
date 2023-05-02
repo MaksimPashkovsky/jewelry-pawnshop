@@ -10,7 +10,6 @@ def add_all_views(admin):
     admin.add_view(ArticleView(Article, session))
     admin.add_view(ModelView(ArticleType, session))
     admin.add_view(ModelView(History, session))
-    admin.add_view(ModelView(Account, session))
     admin.add_view(ModelView(Appraiser, session))
     admin.add_view(ModelView(Auction, session))
     admin.add_view(ModelView(Condition, session))

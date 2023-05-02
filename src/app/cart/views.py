@@ -1,6 +1,4 @@
-import sys
 from datetime import datetime
-from collections import Counter
 from flask import render_template, flash, request, redirect, url_for
 from flask_login import login_required, current_user
 from . import cart
@@ -46,6 +44,13 @@ def remove_all_from_cart():
     return redirect(url_for('.cart_page'))
 
 
+@cart.route('/checkout', methods=['GET'])
+@login_required
+def checkout():
+    articles = current_user.articles_in_cart
+    return render_template('checkout.html', articles=articles)
+
+
 @cart.route('/confirm', methods=['GET'])
 @login_required
 def confirm():
@@ -73,12 +78,6 @@ def confirm():
     cheque_body += articles + '\n\n'
     cheque_body += url_for('main.main_page', _external=True) + '\n'
     cheque_body += 'Thank you!'
-
-    user = storage.get_user_by_id(current_user.user_id)
-
-    account = storage.get_account_by_id(user.account_id)
-    account.balance -= total_sum
-    storage.save(account)
 
     mail_service.send_email(current_user.email, 'Your cheque', cheque_body)
     return '', 200

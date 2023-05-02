@@ -9,7 +9,6 @@
 {% endblock %}
 
 {% block script %}
-    <script src="{{ url_for('cart.static', filename='js/confirm.js') }}"></script>
     <script>
         toastr.options.positionClass = "toast-top-center";
         toastr.options.timeOut = 5000;
@@ -60,10 +59,11 @@
                 </h4>
                 <h4>Total price: ${{ articles|sum(attribute='estimated_price') }}</h4>
                 <p class="text-center">
-                    <button type="button" class="btn btn-success mt-5" {{ "hidden" if not articles }}
-                            onclick="confirm_purchase({{ current_user.account.balance }}, {{ articles|sum(attribute='estimated_price') }}, '{{ url_for('cart.confirm') }}', '{{ url_for('main.main_page') }}')">
-                        Confirm
-                    </button>
+                    <a href="{{ url_for('cart.checkout') }}">
+                        <button type="button" class="btn btn-success mt-5" {{ "hidden" if not articles }}>
+                            Checkout
+                        </button>
+                    </a>
                 </p>
             </div>
         </div>

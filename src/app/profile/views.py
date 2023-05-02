@@ -18,14 +18,8 @@ def save_profile_info():
     data = request.get_json()
     field, value = tuple(data.items())[0]
 
-    if field != 'balance' and value in storage.get_user_column(field):
-        return '', 500
-
     user = storage.get_user_by_id(current_user.user_id)
-    if field == 'balance':
-        user.account.balance = value
-    else:
-        setattr(user, field, value)
+    setattr(user, field, value)
     storage.save(user)
     return '', 200
 

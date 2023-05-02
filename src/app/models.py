@@ -4,26 +4,8 @@ from sqlalchemy.orm import relationship, Mapped, mapped_column
 from app.db_setup import Base
 from sqlalchemy import Column, Integer, String, Numeric, Boolean, Date, ForeignKey, Table, TIMESTAMP, Float
 
-__all__ = ['Account', 'Appraiser', 'Article', 'ArticleType',
+__all__ = ['Appraiser', 'Article', 'ArticleType',
            'Auction', 'Condition', 'Customer', 'PassportInfo', 'User', 'History', 'SoldLot']
-
-
-class Account(Base):
-    __tablename__ = 'Account'
-
-    account_id = Column(Integer, primary_key=True)
-
-    bank = Column(String)
-    account_number = Column(String)
-    balance = Column(Numeric)
-
-    def __init__(self, bank: str, account_number: str, balance: float = 0):
-        self.bank = bank
-        self.account_number = account_number
-        self.balance = balance
-
-    def __repr__(self):
-        return self.account_number
 
 
 class Person:
@@ -197,15 +179,12 @@ class User(UserMixin, Base):
 
     user_id = Column(Integer, primary_key=True)
 
-    account_id = Column(Integer, ForeignKey("Account.account_id"))
-
     login = Column(String, unique=True)
     password = Column(String)
     email = Column(String, unique=True)
     registration_date = Column(Date)
     is_verified = Column(Boolean)
 
-    account = relationship("Account", foreign_keys=[account_id])
     appraiser: Mapped['Appraiser'] = relationship(back_populates='user')
     customer: Mapped['Customer'] = relationship(back_populates='user')
     articles_in_cart: Mapped[List[Article]] = relationship(secondary=cart, back_populates='users_have_in_cart')

@@ -10,7 +10,6 @@
 {% endblock %}
 
 {% block script %}
-
     <script src="{{ url_for('profile.static', filename='js/save_profile_info.js') }}"></script>
     <script>
         toastr.options.positionClass = "toast-top-center";
@@ -62,66 +61,11 @@
                     </button>
                 </div>
             </div>
-            <div class="col-8"></div>
-            <div class="col-2 mt-3">
-                <label for="balance" class="form-label">Balance</label>
-                <div class="input-group">
-                    <input class="form-control" id="balance" value="{{ current_user.account.balance }}" readonly>
-                    <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal"
-                            onclick="top_up()">Top up
-                    </button>
-                </div>
-            </div>
         </div>
         <h2 class="my-5">
             <a class="text" style="text-decoration: underline" href="{{ url_for('profile.history_page') }}">My purchase
                 history</a>
         </h2>
-    </div>
-
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Card credentials</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-12">
-                                <label for="card-number" class="form-label">Card number</label>
-                                <input class="form-control" id="card-number" maxlength="16">
-                            </div>
-                            <div class="col-2 mt-3">
-                                <label for="expiration-month" class="form-label">Month</label>
-                                <input class="form-control" id="expiration-month" maxlength="2">
-                            </div>
-                            <div class="col-2 mt-3">
-                                <label for="expiration-year" class="form-label">Year</label>
-                                <input class="form-control" id="expiration-year" maxlength="2">
-                            </div>
-                            <div class="col-2 mt-3">
-                                <label for="cvv" class="form-label">CVV</label>
-                                <input class="form-control" id="cvv" maxlength="3">
-                            </div>
-
-                            <div class="col-6 mt-3">
-                                <label for="amount" class="form-label">Amount</label>
-                                <input class="form-control" id="amount">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary"
-                            onclick="save_balance('{{ url_for('profile.save_profile_info') }}')">Top up
-                    </button>
-                </div>
-            </div>
-        </div>
     </div>
 
 {% endblock %}

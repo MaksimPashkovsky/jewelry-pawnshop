@@ -37,69 +37,6 @@ function save_email(save_profile_info_url, email) {
     });
 }
 
-function save_balance(save_profile_info_url) {
-    toastr.options.positionClass = "toast-bottom-center";
-    toastr.options.timeOut = 3000;
-
-    const card_number = document.getElementById('card-number');
-    card_number.style.borderColor = "black";
-    if (card_number.value.replace(/\d{16}/, "OK") !== "OK") {
-        card_number.style.borderColor = "red";
-        toastr.error('Invalid card number!')
-        return false;
-    }
-
-    const exp_month = document.getElementById('expiration-month')
-    const exp_year = document.getElementById('expiration-year')
-
-    exp_month.style.borderColor = "black";
-    exp_year.style.borderColor = "black";
-
-    if (exp_month.value.replace(/\d{2}/, "OK") !== "OK" || Number(exp_month.value) > 12 || Number(exp_month.value) < 1) {
-        exp_month.style.borderColor = "red";
-        toastr.error('Invalid month!')
-        return false;
-    }
-    if (exp_year.value.replace(/\d{2}/, "OK") !== "OK" || Number(exp_year.value) < 23) {
-        exp_year.style.borderColor = "red";
-        toastr.error('Invalid year!')
-        return false;
-    }
-
-    const cvv = document.getElementById('cvv');
-    cvv.style.borderColor = "black";
-    if (cvv.value.replace(/\d{3}/, "OK") !== "OK") {
-        cvv.style.borderColor = "red";
-        toastr.error('Invalid CVV!')
-        return false;
-    }
-
-    const amount = document.getElementById('amount');
-    amount.style.borderColor = "black";
-
-    if (amount.value.replace(/\d+\.\d{1,2}/, "OK") !== "OK" && amount.value.replace(/\d+/, "OK") !== "OK") {
-        amount.style.borderColor = "red";
-        toastr.error('Invalid amount!')
-        return false;
-    }
-    let balance = document.getElementById('balance')
-    let balance_input = document.getElementById('amount')
-
-    fetch(save_profile_info_url, {
-        method: "POST",
-        body: JSON.stringify({balance: Number(balance_input.value) + Number(balance.value)}),
-        headers: {"Content-type": "application/json; charset=UTF-8",},
-    }).then(function (response) {
-        if (response.ok) {
-            toastr.success('Successfully added!');
-            balance.value = Number(balance_input.value) + Number(balance.value)
-            setTimeout(() => {
-                location.reload()
-            }, 1000);
-        }
-    });
-}
-
 function change_password(change_password_url) {
     let old_password_input = document.getElementById("old-password")
     let new_password_input = document.getElementById("new-password")

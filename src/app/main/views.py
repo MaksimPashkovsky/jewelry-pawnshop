@@ -5,7 +5,7 @@ from flask import render_template, request, flash, redirect, url_for, session
 from flask_login import login_user, login_required, logout_user
 from . import main
 from app import storage
-from app.models import User, Account, Customer
+from app.models import User, Customer
 
 
 @main.route('/')
@@ -68,11 +68,8 @@ def register_page():
 
     session['email'] = email
 
-    new_account = Account('Belarusbank', str(int(random.random() * 10**15)))
-    storage.save(new_account)
-
     new_user = User(login=login, password=generate_password_hash(password),
-                    email=email, reg_date=datetime.now(), account_id=new_account.account_id, is_verified=False)
+                    email=email, reg_date=datetime.now(), is_verified=False)
     storage.save(new_user)
 
     new_customer = Customer(user_id=new_user.user_id)
