@@ -10,9 +10,7 @@ from app.models import User, Customer
 
 @main.route('/')
 def main_page():
-    all_articles = storage.get_all_articles()
-    random_articles = random.sample(all_articles, 3)
-    return render_template('main_page.html', random_articles=random_articles)
+    return render_template('main_page.html')
 
 
 @main.route('/login', methods=['GET', 'POST'])

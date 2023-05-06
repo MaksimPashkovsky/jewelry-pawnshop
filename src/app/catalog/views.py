@@ -37,11 +37,10 @@ def catalog_page():
     return render_template('catalog.html', articles=filtered_articles)
 
 
-@catalog.route('/article/<id>')
+@catalog.route('/article/<int:id>')
 def article_page(id):
     article = storage.get_article_by_id(id)
-    num_of_purchases = len(article.users_have_in_history)
-    return render_template('article.html', article=article, num_of_purchases=num_of_purchases)
+    return render_template('article.html', article=article)
 
 
 @catalog.route('/clear-filters/<article_type>')

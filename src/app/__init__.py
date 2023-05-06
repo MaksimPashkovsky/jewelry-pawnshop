@@ -36,7 +36,7 @@ def create_app():
 
     @app.shell_context_processor
     def make_shell_context():
-        return dict(Base=Base, engine=engine, Account=Account, User=User, Article=Article, History=History)
+        return dict(Base=Base, engine=engine, User=User, Article=Article, History=History)
 
     @app.context_processor
     def inject_types():
