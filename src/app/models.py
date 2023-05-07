@@ -1,11 +1,12 @@
-from typing import List, Union
+from typing import List
 from flask_login import UserMixin
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from app.db_setup import Base
-from sqlalchemy import Column, Integer, String, Numeric, Boolean, Date, ForeignKey, Table, TIMESTAMP, Float
+from sqlalchemy import Column, Integer, String, Numeric, Boolean, Date, ForeignKey, Table, TIMESTAMP, Float, ARRAY, \
+    LargeBinary
 
-__all__ = ['Appraiser', 'Article', 'ArticleType',
-           'Auction', 'Condition', 'Customer', 'PassportInfo', 'User', 'History', 'SoldLot']
+__all__ = ['Appraiser', 'Article', 'ArticleType', 'Auction', 'Condition', 'Customer', 'PassportInfo', 'User', 'History',
+           'SoldLot', 'EstimationOrder']
 
 
 class Person:
@@ -198,12 +199,11 @@ class User(UserMixin, Base):
     def is_admin(self):
         return self.appraiser is not None
 
-    def __init__(self, login, password, email, reg_date, account_id, is_verified=False):
+    def __init__(self, login, password, email, reg_date, is_verified=False):
         self.login = login
         self.password = password
         self.email = email
         self.registration_date = reg_date
-        self.account_id = account_id
         self.is_verified = is_verified
 
     def __repr__(self):
@@ -225,3 +225,19 @@ class SoldLot(Base):
 
     article: Mapped[Article] = relationship(back_populates='users_have_in_sold_lots')
     user: Mapped[User] = relationship(back_populates='articles_in_sold_lots')
+
+
+class EstimationOrder(Base):
+    __tablename__ = 'EstimationOrder'
+
+    order_id = Column(Integer, primary_key=True)
+    name = Column(String)
+    phone_number = Column(String)
+    description = Column(String)
+    images = Column(ARRAY(LargeBinary))
+
+    def __init__(self, name, phone_number, desc, imgs):
+        self.name = name
+        self.phone_number = phone_number
+        self.description = desc
+        self.images = imgs

@@ -8,6 +8,26 @@
     <link rel="stylesheet" href="{{ url_for('.static', filename='styles/main.css') }}">
 {% endblock %}
 
+{% block script %}
+    <script>
+        toastr.options.positionClass = "toast-top-center";
+        toastr.options.timeOut = 3000;
+        const input = document.querySelector('#images');
+
+        input.addEventListener('change', (e) => {
+            const files = input.files;
+            const btn = document.getElementById('submitBtn')
+
+            if (files.length > 5) {
+                toastr.error('Only 5 files are allowed to upload')
+                btn.disabled = true;
+            } else {
+                btn.disabled = false;
+            }
+        });
+    </script>
+{% endblock %}
+
 {% block main %}
     <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-indicators">
@@ -24,7 +44,8 @@
                      class="d-block w-100" alt="...">
                 <div class="carousel-caption d-none d-md-block">
                     <h5>Up to 100% of appraised value</h5>
-                    <p>Our estimation gives you the opportunity to get more for your jewelry than other companies offer</p>
+                    <p>Our estimation gives you the opportunity to get more for your jewelry than other companies
+                        offer</p>
                 </div>
             </div>
             <div class="carousel-item">
@@ -73,8 +94,8 @@
             <div class="col">
                 <div class="card h-100">
                     <a href="/catalog/bracelet">
-                    <img src="{{ url_for('static', filename='images/main_bracelet.png') }}" class="card-img-top p-4"
-                         alt="...">
+                        <img src="{{ url_for('static', filename='images/main_bracelet.png') }}" class="card-img-top p-4"
+                             alt="...">
                     </a>
                     <div class="card-body">
                         <h5 class="card-title">Bracelet</h5>
@@ -84,7 +105,8 @@
             <div class="col">
                 <div class="card h-100">
                     <a href="/catalog/watch">
-                    <img src="{{ url_for('static', filename='images/main_watch.png') }}" class="card-img-top" alt="...">
+                        <img src="{{ url_for('static', filename='images/main_watch.png') }}" class="card-img-top"
+                             alt="...">
                     </a>
                     <div class="card-body">
                         <h5 class="card-title">Watch</h5>
@@ -94,8 +116,8 @@
             <div class="col">
                 <div class="card h-100">
                     <a href="/catalog/necklace">
-                    <img src="{{ url_for('static', filename='images/main_necklace.png') }}" class="card-img-top"
-                         alt="...">
+                        <img src="{{ url_for('static', filename='images/main_necklace.png') }}" class="card-img-top"
+                             alt="...">
                     </a>
                     <div class="card-body">
                         <h5 class="card-title">Necklace</h5>
@@ -107,8 +129,8 @@
             <div class="col">
                 <div class="card h-100">
                     <a href="/catalog/pendant">
-                    <img src="{{ url_for('static', filename='images/main_pendant.png') }}" class="card-img-top"
-                         alt="...">
+                        <img src="{{ url_for('static', filename='images/main_pendant.png') }}" class="card-img-top"
+                             alt="...">
                     </a>
                     <div class="card-body">
                         <h5 class="card-title">Pendant</h5>
@@ -118,8 +140,8 @@
             <div class="col">
                 <div class="card h-100">
                     <a href="/catalog/chain">
-                    <img src="{{ url_for('static', filename='images/main_chain.png') }}" class="card-img-top p-4"
-                         alt="...">
+                        <img src="{{ url_for('static', filename='images/main_chain.png') }}" class="card-img-top p-4"
+                             alt="...">
                     </a>
                     <div class="card-body">
                         <h5 class="card-title">Chain</h5>
@@ -129,8 +151,8 @@
             <div class="col">
                 <div class="card h-100">
                     <a href="/catalog/earrings">
-                    <img src="{{ url_for('static', filename='images/main_earrings.png') }}" class="card-img-top p-4"
-                         alt="...">
+                        <img src="{{ url_for('static', filename='images/main_earrings.png') }}" class="card-img-top p-4"
+                             alt="...">
                     </a>
                     <div class="card-body">
                         <h5 class="card-title">Earrings</h5>
@@ -140,8 +162,8 @@
             <div class="col">
                 <div class="card h-100">
                     <a href="/catalog/brooch">
-                    <img src="{{ url_for('static', filename='images/main_brooch.png') }}" class="card-img-top p-4"
-                         alt="...">
+                        <img src="{{ url_for('static', filename='images/main_brooch.png') }}" class="card-img-top p-4"
+                             alt="...">
                     </a>
                     <div class="card-body">
                         <h5 class="card-title">Brooch</h5>
@@ -149,7 +171,36 @@
                 </div>
             </div>
         </div>
-        <hr class="featurette-divider my-5"><a name="info1"></a>
+        <hr class="featurette-divider my-5">
+    </div>
+    <div class="container mt-5">
+        <a name="estimation"></a>
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-6 bg-secondary-subtle rounded">
+                <div id="liveAlertPlaceholder"></div>
+                <h2 class="text-center">Online estimation</h2>
+                <p class="lead">Fill the form to get approximate estimation</p>
+                <form action="{{ url_for('main.estimation') }}" method="post" enctype="multipart/form-data">
+                    <label for="name" class="form-label">Name<span style="color: red">*</span></label>
+                    <input type="text" class="form-control w-50 input-lg" id="name" name="name" required>
+                    <label for="phone" class="form-label">Phone number<span style="color: red">*</span></label>
+                    <input type="text" class="form-control w-50" id="phone" name="phone" required>
+                    <label for="description" class="form-label">Description<span style="color: red">*</span></label>
+                    <textarea type="text" class="form-control" id="description" name="description"
+                              required></textarea>
+                    <label for="images" class="form-label">Images<span style="color: red">*</span></label>
+                    <input type="file" class="form-control w-50" id="images" name="images"
+                           accept="image/jpeg, image/png, image/jpg" required multiple>
+                    <button class="w-100 btn btn-primary btn-lg my-3" id="submitBtn" type="submit">Submit</button>
+                </form>
+            </div>
+            <div class="col-3"></div>
+        </div>
+        <hr class="featurette-divider my-5">
+    </div>
+    <div class="container mt-5">
+        <a name="info1"></a>
         <div class="row featurette">
             <div class="col-md-7">
                 <h2 class="featurette-heading">What is pawnshop?</h2>
@@ -173,7 +224,8 @@
                      width="500" height="500">
             </div>
         </div>
-        <hr class="featurette-divider my-5"><a name="info2"></a>
+        <hr class="featurette-divider my-5">
+        <a name="info2"></a>
         <div class="row featurette">
             <div class="col-md-7 order-md-2">
                 <h2 class="featurette-heading">Uvelirka jewelry pawnshop</h2>
@@ -200,7 +252,8 @@
                      width="500" height="500">
             </div>
         </div>
-        <hr class="featurette-divider my-5"><a name="info3"></a>
+        <hr class="featurette-divider my-5">
+        <a name="info3"></a>
         <div class="row featurette">
             <div class="col-md-7">
                 <h2 class="featurette-heading">How to pawn jewelry to a pawnshop?</h2>
@@ -233,7 +286,8 @@
                      width="500" height="500">
             </div>
         </div>
-        <hr class="featurette-divider my-5"><a name="info4"></a>
+        <hr class="featurette-divider my-5">
+        <a name="info4"></a>
         <div class="row featurette">
             <div class="col-md-7 order-md-2">
                 <h2 class="featurette-heading">Estimation</h2>
@@ -272,7 +326,8 @@
                      width="500" height="500">
             </div>
         </div>
-        <hr class="featurette-divider my-5"><a name="info5"></a>
+        <hr class="featurette-divider my-5">
+        <a name="info5"></a>
         <div class="row featurette">
             <div class="col-md-7">
                 <h2 class="featurette-heading">Why you should choose Uvelirka pawnshop</h2>
