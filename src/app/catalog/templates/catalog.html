@@ -167,7 +167,6 @@
                             <button type="submit" class="btn btn-success">Apply</button>
                         </span>
                     </div>
-
                 </form>
             </div>
             <div class="col-9">
@@ -208,11 +207,39 @@
         </div>
         <nav aria-label="Page navigation example">
             <ul class="pagination justify-content-end">
-                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                {% set left = current_page - 1%}
+                {% set right = total_pages - current_page %}
+
+                {% if total_pages == 1 %}
+                    <li class="page-item active"><a class="page-link">1</a></li>
+                {% elif total_pages == 2 %}
+                    {% for i in range(1, 2 + 1) %}
+                        <li class="page-item {{ "active" if i == current_page }}"><a class="page-link" href="{{ ["?page=", i] | join if i != current_page }}">{{ i }}</a></li>
+                    {% endfor %}
+                {% elif total_pages == 3 %}
+                    {% for i in range(1, 3 + 1) %}
+                        <li class="page-item {{ "active" if i == current_page }}"><a class="page-link" href="{{ ["?page=", i] | join if i != current_page }}">{{ i }}</a></li>
+                    {% endfor %}
+                {% else %}
+                    {% if left > 2 %}
+                        <li class="page-item"><a class="page-link" href="?page=1"><<</a></li>
+                        <li class="page-item"><a class="page-link" href="{{ ["?page=", current_page - 1] | join }}"><</a></li>
+                        <li class="page-item"><a class="page-link">...</a></li>
+                    {% endif %}
+                    {% set begin = current_page - 2 %}
+                    {% set end = [current_page + 2, total_pages] | min + 1 %}
+                    {% for i in range(begin, end) %}
+                        {% if i > 0 %}
+                        <li class="page-item {{ "active" if i == current_page }}"><a class="page-link" href="{{ ["?page=", i] | join if i != current_page }}">{{ i }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if right > 2 %}
+                        <li class="page-item"><a class="page-link">...</a></li>
+                        <li class="page-item"><a class="page-link" href="{{ ["?page=", current_page + 1] | join }}">></a></li>
+                        <li class="page-item"><a class="page-link" href="{{ ["?page=", total_pages] | join }}">>></a></li>
+                    {% endif %}
+                {% endif %}
             </ul>
         </nav>
     </div>
-
 {% endblock %}

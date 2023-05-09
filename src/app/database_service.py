@@ -13,6 +13,12 @@ class DatabaseService:
     def get_all_articles_for_sale(self):
         return self.session.query(Article).filter_by(for_sale=True).all()
 
+    def get_articles_for_sale(self, offset, limit):
+        return self.session.query(Article).filter_by(for_sale=True).order_by(Article.name).offset(offset).limit(limit).all()
+
+    def get_articles_for_sale_count(self):
+        return self.session.query(Article).filter_by(for_sale=True).count()
+
     def get_article_by_id(self, ar_id):
         return self.session.query(Article).filter_by(article_id=ar_id).first()
 
