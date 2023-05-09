@@ -13,6 +13,7 @@ class DatabaseConfig(Config):
 
 class AppConfig(Config):
     SECRET_KEY = config('APP_SECRET_KEY')
+    FLASK_ADMIN_SWATCH = 'cosmo'
 
 
 class UrlSafeTimeSerializerConfig(Config):

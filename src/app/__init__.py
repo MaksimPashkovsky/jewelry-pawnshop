@@ -1,5 +1,5 @@
 from flask import Flask
-from flask_login import LoginManager, current_user
+from flask_login import LoginManager
 from flask_toastr import Toastr
 from flask_admin import Admin
 from flask_mail import Mail

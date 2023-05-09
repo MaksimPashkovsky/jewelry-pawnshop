@@ -3,6 +3,7 @@ from flask_login import current_user
 from flask import abort, Markup, render_template_string
 from app.models import *
 from .db_setup import session
+import base64
 
 
 def add_all_views(admin):
@@ -20,6 +21,7 @@ def add_all_views(admin):
 
 
 class EstimationOrderView(ModelView):
+    column_list = ['images', 'description', 'name', 'phone_number']
 
     def _list_thumbnail(self, context, model, name):
         if not model.images:
@@ -28,19 +30,18 @@ class EstimationOrderView(ModelView):
         inner = ''
 
         template = """
-            <li>
+            <div class="text-center">
                 <a href="{}">
-                    image{}
+                    <img width="300" src="data:image/jpeg;base64,{}">
                 </a>
-            </li>
+            </div>
         """
 
-        for i in range(len(model.images)):
+        for i, image in enumerate(model.images):
             href = "{{ " + "url_for('main.getimage', order_id={}, file_num={})".format(model.order_id, i) + " }}"
+            inner += template.format(href, str(base64.b64encode(image), "utf-8"))
 
-            inner += template.format(href, i)
-
-        return Markup(render_template_string("<ul>{}</ul>".format(inner)))
+        return Markup(render_template_string("{}".format(inner)))
 
     column_formatters = {
         'images': _list_thumbnail
