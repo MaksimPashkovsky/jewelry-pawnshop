@@ -11,12 +11,24 @@
 
 {% block script %}
     <script src="{{ url_for('catalog.static', filename='js/multi_range_slider.js') }}"></script>
-    <script src="{{ url_for('catalog.static', filename='js/search.js') }}"></script>
     <script>
         toastr.options.positionClass = "toast-bottom-right";
         toastr.options.timeOut = 1500;
-        const sorting_option = "{{ sorting_option }}";
-        document.querySelector('#sorting-options').value = sorting_option !== "" ? sorting_option : 'name-asc'
+
+        document.getElementById("sorting-options").addEventListener('change', (event) => {
+            //const params = new URLSearchParams(window.location.search);
+            document.getElementById('sorting-input').value = event.target.value;
+            document.getElementById('filters-form').submit();
+
+            //params.set('sort', event.target.value);
+            //params.set('page', 1);
+            //var new_url = window.location.href.split('?')[0] + "?" + params.toString();
+            //window.location.replace(new_url);
+        });
+
+        //document.querySelector('#sorting-options option[value= {{ request.args.get('sort') }} ]').selected = true;
+
+
     </script>
 
 {% endblock %}
@@ -25,8 +37,9 @@
     <div class="container">
         <div class="row">
             <div class="col-3">
-                <form method="post" action="{{ url_for('catalog.catalog_page') }}">
+                <form method="post" action="{{ url_for('catalog.catalog_page') }}" id="filters-form">
                     <h5 class="text-center">F I L T E R S</h5>
+                    <input type="text" hidden="hidden" name="sorting-input" id="sorting-input" value="name-asc">
                     <div class="accordion" id="accordionPanelsStayOpenExample">
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="panelsStayOpen-headingOne">
@@ -41,56 +54,56 @@
                                 <div class="accordion-body">
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="match-ring"
-                                               id="flexCheckDefault" {{ session['match-ring'] }}>
+                                               id="flexCheckDefault" {% if request.args.get('types') %} {{ "checked" if 'Ring' in request.args.get('types').split(',') }} {% endif %} {{ session['match-ring'] }}>
                                         <label class="form-check-label" for="flexCheckDefault">
                                             Ring
                                         </label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="match-bracelet"
-                                               id="flexCheckDefault" {{ session['match-bracelet'] }}>
+                                               id="flexCheckDefault" {% if request.args.get('types') %} {{ "checked" if 'Bracelet' in request.args.get('types').split(',') }} {% endif %} {{ session['match-bracelet'] }}>
                                         <label class="form-check-label" for="flexCheckDefault">
                                             Bracelet
                                         </label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="match-watch"
-                                               id="flexCheckDefault" {{ session['match-watch'] }}>
+                                               id="flexCheckDefault" {% if request.args.get('types') %} {{ "checked" if 'Watch' in request.args.get('types').split(',') }} {% endif %} {{ session['match-watch'] }}>
                                         <label class="form-check-label" for="flexCheckDefault">
                                             Watch
                                         </label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="match-necklace"
-                                               id="flexCheckDefault" {{ session['match-necklace'] }}>
+                                               id="flexCheckDefault" {% if request.args.get('types') %} {{ "checked" if 'Necklace' in request.args.get('types').split(',') }} {% endif %} {{ session['match-necklace'] }}>
                                         <label class="form-check-label" for="flexCheckDefault">
                                             Necklace
                                         </label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="match-pendant"
-                                               id="flexCheckDefault" {{ session['match-pendant'] }}>
+                                               id="flexCheckDefault" {% if request.args.get('types') %} {{ "checked" if 'Pendant' in request.args.get('types').split(',') }} {% endif %} {{ session['match-pendant'] }}>
                                         <label class="form-check-label" for="flexCheckDefault">
                                             Pendant
                                         </label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="match-chain"
-                                               id="flexCheckDefault" {{ session['match-chain'] }}>
+                                               id="flexCheckDefault" {% if request.args.get('types') %} {{ "checked" if 'Chain' in request.args.get('types').split(',') }} {% endif %} {{ session['match-chain'] }}>
                                         <label class="form-check-label" for="flexCheckDefault">
                                             Chain
                                         </label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="match-earrings"
-                                               id="flexCheckDefault" {{ session['match-earrings'] }}>
+                                               id="flexCheckDefault" {% if request.args.get('types') %} {{ "checked" if 'Earrings' in request.args.get('types').split(',') }} {% endif %} {{ session['match-earrings'] }}>
                                         <label class="form-check-label" for="flexCheckDefault">
                                             Earrings
                                         </label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" name="match-brooch"
-                                               id="flexCheckDefault" {{ session['match-brooch'] }}>
+                                               id="flexCheckDefault" {% if request.args.get('types') %} {{ "checked" if 'Brooch' in request.args.get('types').split(',') }} {% endif %} {{ session['match-brooch'] }}>
                                         <label class="form-check-label" for="flexCheckDefault">
                                             Brooch
                                         </label>
@@ -110,8 +123,7 @@
                                  aria-labelledby="panelsStayOpen-headingTwo">
                                 <div class="accordion-body">
                                     <input type="text" id="searchInput" onkeyup="searchFunction()" class="form-control"
-                                           placeholder="Article name"
-                                           name="search-string" autocomplete="off">
+                                           placeholder="Article name" name="search-string" autocomplete="off" value="{{ session['search-string'] }}{{ request.args.get('search') if request.args.get('search') }}">
                                 </div>
                             </div>
                         </div>
@@ -129,30 +141,30 @@
                                     <div class="range_container mt-3">
                                         <div class="sliders_control">
                                             <input id="fromSlider" type="range"
-                                                   value="{{ articles|min(attribute='estimated_price')|attr('estimated_price') }}"
-                                                   min="{{ articles|min(attribute='estimated_price')|attr('estimated_price') }}"
-                                                   max="{{ articles|max(attribute='estimated_price')|attr('estimated_price') }}"/>
+                                                   value="{{ request.args.get('price-start') if request.args.get('price-start') }}{{ session['price-start'] }}"
+                                                   min="{{ request.args.get('price-start') if request.args.get('price-start') }}{{ session['price-start'] }}"
+                                                   max="{{ request.args.get('price-end') if request.args.get('price-end') }}{{ session['price-end'] }}"/>
                                             <input id="toSlider" type="range"
-                                                   value="{{ articles|max(attribute='estimated_price')|attr('estimated_price') }}"
-                                                   min="{{ articles|min(attribute='estimated_price')|attr('estimated_price') }}"
-                                                   max="{{ articles|max(attribute='estimated_price')|attr('estimated_price') }}"/>
+                                                   value="{{ request.args.get('price-end') if request.args.get('price-end') }}{{ session['price-end'] }}"
+                                                   min="{{ request.args.get('price-start') if request.args.get('price-start') }}{{ session['price-start'] }}"
+                                                   max="{{ request.args.get('price-end') if request.args.get('price-end') }}{{ session['price-end'] }}"/>
                                         </div>
                                         <div class="form_control">
                                             <div class="form_control_container">
                                                 <div class="form_control_container__time">Min</div>
                                                 <input class="form_control_container__time__input" type="number"
                                                        id="fromInput" name="price-start"
-                                                       value="{{ articles|min(attribute='estimated_price')|attr('estimated_price') }}"
-                                                       min="{{ articles|min(attribute='estimated_price')|attr('estimated_price') }}"
-                                                       max="{{ articles|max(attribute='estimated_price')|attr('estimated_price') }}"/>
+                                                       value="{{ request.args.get('price-start') if request.args.get('price-start') }}{{ session['price-start'] }}"
+                                                       min="{{ request.args.get('price-start') if request.args.get('price-start') }}{{ session['price-start'] }}"
+                                                       max="{{ request.args.get('price-end') if request.args.get('price-end') }}{{ session['price-end'] }}"/>
                                             </div>
                                             <div class="form_control_container">
                                                 <div class="form_control_container__time">Max</div>
                                                 <input class="form_control_container__time__input" type="number"
                                                        id="toInput" name="price-end"
-                                                       value="{{ articles|max(attribute='estimated_price')|attr('estimated_price') }}"
-                                                       min="{{ articles|min(attribute='estimated_price')|attr('estimated_price') }}"
-                                                       max="{{ articles|max(attribute='estimated_price')|attr('estimated_price') }}"/>
+                                                       value="{{ request.args.get('price-end') if request.args.get('price-end') }}{{ session['price-end'] }}"
+                                                       min="{{ request.args.get('price-start') if request.args.get('price-start') }}{{ session['price-start'] }}"
+                                                       max="{{ request.args.get('price-end') if request.args.get('price-end') }}{{ session['price-end'] }}"/>
                                             </div>
                                         </div>
                                     </div>
@@ -171,12 +183,11 @@
             </div>
             <div class="col-9">
                 <p class="text-end">
-                    <b>Sort by</b>
-                    <select name="sorting" id="sorting-options">
-                        <option value="name-asc">↑ Name</option>
-                        <option value="name-desc">↓ Name</option>
-                        <option value="estimated_price-asc">↑ Price</option>
-                        <option value="estimated_price-desc">↓ Price</option>
+                    <select class="form-select w-25" name="sorting" id="sorting-options" placeholder="hb">
+                        <option value="name-asc"  {{ "selected" if request.args.get('sort') == 'name-asc' }} {{ session['sort-name-asc'] }}>↑ Name</option>
+                        <option value="name-desc" {{ "selected" if request.args.get('sort') == 'name-desc' }} {{ session['sort-name-desc'] }}>↓ Name</option>
+                        <option value="estimated_price-asc" {{ "selected" if request.args.get('sort') == 'estimated_price-asc' }} {{ session['sort-estimated_price-asc'] }}>↑ Price</option>
+                        <option value="estimated_price-desc" {{ "selected" if request.args.get('sort') == 'estimated_price-desc' }} {{ session['sort-estimated_price-desc'] }}>↓ Price</option>
                     </select>
                 </p>
                 <div class="container" id="articlesContainer">
@@ -207,36 +218,46 @@
         </div>
         <nav aria-label="Page navigation example">
             <ul class="pagination justify-content-end">
-                {% set left = current_page - 1%}
+                {% set left = current_page - 1 %}
                 {% set right = total_pages - current_page %}
-
                 {% if total_pages == 1 %}
-                    <li class="page-item active"><a class="page-link">1</a></li>
+                    <li class="page-item active">
+                        <a class="page-link">1</a>
+                    </li>
                 {% elif total_pages == 2 %}
                     {% for i in range(1, 2 + 1) %}
-                        <li class="page-item {{ "active" if i == current_page }}"><a class="page-link" href="{{ ["?page=", i] | join if i != current_page }}">{{ i }}</a></li>
+                        <li class="page-item {{ "active" if i == current_page }}">
+                        <a class="page-link" href="{{ update_query_param('page', i) if i != current_page }}">{{ i }}</a>
+                        </li>
                     {% endfor %}
                 {% elif total_pages == 3 %}
                     {% for i in range(1, 3 + 1) %}
-                        <li class="page-item {{ "active" if i == current_page }}"><a class="page-link" href="{{ ["?page=", i] | join if i != current_page }}">{{ i }}</a></li>
+                        <li class="page-item {{ "active" if i == current_page }}">
+                            <a class="page-link" href="{{ update_query_param('page', i) if i != current_page }}">{{ i }}</a>
+                        </li>
                     {% endfor %}
                 {% else %}
                     {% if left > 2 %}
-                        <li class="page-item"><a class="page-link" href="?page=1"><<</a></li>
-                        <li class="page-item"><a class="page-link" href="{{ ["?page=", current_page - 1] | join }}"><</a></li>
+                        <li class="page-item"><a class="page-link" href="{{ update_query_param('page', 1) }}"><<</a></li>
+                        <li class="page-item"><a class="page-link"
+                                                 href=" {{ update_query_param('page', current_page - 1) }}"><</a></li>
                         <li class="page-item"><a class="page-link">...</a></li>
                     {% endif %}
                     {% set begin = current_page - 2 %}
                     {% set end = [current_page + 2, total_pages] | min + 1 %}
                     {% for i in range(begin, end) %}
                         {% if i > 0 %}
-                        <li class="page-item {{ "active" if i == current_page }}"><a class="page-link" href="{{ ["?page=", i] | join if i != current_page }}">{{ i }}</a></li>
+                            <li class="page-item {{ "active" if i == current_page }}">
+                                <a class="page-link" href="{{ update_query_param('page', i) if i != current_page }}">{{ i }}</a>
+                            </li>
                         {% endif %}
                     {% endfor %}
                     {% if right > 2 %}
                         <li class="page-item"><a class="page-link">...</a></li>
-                        <li class="page-item"><a class="page-link" href="{{ ["?page=", current_page + 1] | join }}">></a></li>
-                        <li class="page-item"><a class="page-link" href="{{ ["?page=", total_pages] | join }}">>></a></li>
+                        <li class="page-item"><a class="page-link"
+                                                 href=" {{ update_query_param('page', current_page + 1) if i != current_page }}">></a></li>
+                        <li class="page-item"><a class="page-link" href="{{ update_query_param('page', total_pages) }}">>></a>
+                        </li>
                     {% endif %}
                 {% endif %}
             </ul>
