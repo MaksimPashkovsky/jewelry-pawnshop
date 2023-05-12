@@ -25,14 +25,12 @@ class DatabaseService:
 
         inner = ", ".join(f"Article.type.has(name='{t}')" for t in types)
         expr = f"query = query.filter(or_({inner}))"
-        print(expr)
 
         lcls = locals()
         exec(expr, globals(), lcls)
         query = lcls['query']
 
         query = query.filter(Article.estimated_price.between(min_price, max_price))
-        print(query)
 
         if desc:
             query = query.order_by(getattr(Article, order_by).desc())

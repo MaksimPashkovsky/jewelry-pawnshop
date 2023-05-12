@@ -12,50 +12,50 @@
     <div class="container">
         <div class="row">
             <div class="col-md-7">
-
-                    <h4 class="mb-4">Payment</h4>
-                    <div class="my-3">
-                        <div class="form-check">
-                            <input id="credit" name="paymentMethod" type="radio" class="form-check-input" checked=""
-                                   required="" onclick="enable_card()">
-                            <label class="form-check-label" for="credit">Credit card</label>
-                        </div>
-                        <div class="form-check">
-                            <input id="cash" name="paymentMethod" type="radio" class="form-check-input" required=""
-                                   onclick="disable_card()">
-                            <label class="form-check-label" for="cash">Payment upon receipt (Cash)</label>
-                        </div>
+                <h4 class="mb-4">Payment</h4>
+                <div class="my-3">
+                    <div class="form-check">
+                        <input id="credit" name="paymentMethod" type="radio" class="form-check-input" checked=""
+                               required="" onclick="enable_card()">
+                        <label class="form-check-label" for="credit">Credit card</label>
                     </div>
-                    <div class="row gy-3">
-                        <div class="col-md-6">
-                            <label for="cc-name" class="form-label">Name on card</label>
-                            <input type="text" class="form-control" id="cc-name">
-                        </div>
-
-                        <div class="col-md-6">
-                            <label for="card-number" class="form-label">Credit card number</label>
-                            <input type="text" class="form-control" id="card-number" maxlength="16">
-                        </div>
-
-                        <div class="col-md-3">
-                            <label for="expiration-month" class="form-label">Expiration month</label>
-                            <input type="text" class="form-control" id="expiration-month" maxlength="2">
-                        </div>
-
-                        <div class="col-md-3">
-                            <label for="expiration-year" class="form-label">Expiration year</label>
-                            <input type="text" class="form-control" id="expiration-year" maxlength="2">
-                        </div>
-
-                        <div class="col-md-3">
-                            <label for="cvv" class="form-label">CVV</label>
-                            <input type="text" class="form-control" id="cvv" maxlength="3">
-                        </div>
+                    <div class="form-check">
+                        <input id="cash" name="paymentMethod" type="radio" class="form-check-input" required=""
+                               onclick="disable_card()">
+                        <label class="form-check-label" for="cash">Payment upon receipt (Cash)</label>
                     </div>
-                    <hr class="my-4">
-                    <button class="w-100 btn btn-primary btn-lg mb-5"
-                    onclick="confirm_purchase('{{ url_for('cart.confirm') }}', '{{ url_for('main.main_page') }}')">
-                        Confirm</button>
+                </div>
+                <div class="row gy-3">
+                    <div class="col-md-6">
+                        <label for="cc-name" class="form-label">Name on card</label>
+                        <input type="text" class="form-control" id="cc-name">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="card-number" class="form-label">Credit card number</label>
+                        <input type="text" class="form-control" id="card-number" maxlength="16">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="expiration-month" class="form-label">Expiration month</label>
+                        <input type="text" class="form-control" id="expiration-month" maxlength="2">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="expiration-year" class="form-label">Expiration year</label>
+                        <input type="text" class="form-control" id="expiration-year" maxlength="2">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="cvv" class="form-label">CVV</label>
+                        <input type="text" class="form-control" id="cvv" maxlength="3">
+                    </div>
+                </div>
+                <hr class="my-4">
+                <button class="w-100 btn btn-primary btn-lg mb-5"
+                        onclick="confirm_purchase('{{ url_for('cart.confirm') }}', '{{ url_for('main.main_page') }}')">
+                    Confirm
+                </button>
 
             </div>
             <div class="col-md-5 col-lg-4 order-md-last">

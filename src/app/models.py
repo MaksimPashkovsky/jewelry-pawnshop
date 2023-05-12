@@ -3,7 +3,7 @@ from flask_login import UserMixin
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from app.db_setup import Base
 from sqlalchemy import Column, Integer, String, Numeric, Boolean, Date, ForeignKey, Table, TIMESTAMP, Float, ARRAY, \
-    LargeBinary
+    LargeBinary, Text
 
 __all__ = ['Appraiser', 'Article', 'ArticleType', 'Auction', 'Condition', 'Customer', 'PassportInfo', 'User', 'History',
            'SoldLot', 'EstimationOrder']
@@ -69,6 +69,7 @@ class Article(Base):
     type_id = Column(Integer, ForeignKey("ArticleType.type_id"))
 
     name = Column(String)
+    description = Column(Text)
     weight = Column(Numeric)
     estimated_price = Column(Numeric)
     receipt_date = Column(Date)

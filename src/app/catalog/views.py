@@ -1,5 +1,4 @@
 import sys
-from operator import attrgetter
 from flask import request, render_template, session, redirect, url_for
 from . import catalog
 from app import storage
@@ -33,7 +32,7 @@ def catalog_page():
 
     field, order = sorting_option.split('-')
 
-    articles_per_page = 1
+    articles_per_page = 12
     page = request.args.get('page', 1, type=int)
     offset = articles_per_page * (page - 1)
 
